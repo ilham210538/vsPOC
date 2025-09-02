@@ -1,0 +1,5 @@
+2025-09-02 16:21:56,437 - improved_tools - DEBUG - Graph client configured for tenant: 1f3f9d61...
+2025-09-02 16:22:03,929 - improved_tools - DEBUG - Reading schedule for user: default
+2025-09-02 16:22:06,015 - improved_tools - ERROR - Graph API error 403: The server returned an unexpected status code and no error class is registered for this code 403
+2025-09-02 16:22:12,682 - improved_tools - DEBUG - Reading schedule for user: default
+2025-09-02 16:22:14,423 - improved_tools - ERROR - Graph API error 403: The server returned an unexpected status code and no error class is registered for this code 403

@@ -1,0 +1,14 @@
+2025-09-02 16:21:56,440 - __main__ - DEBUG - Function tools initialized successfully
+2025-09-02 16:21:56,447 - __main__ - DEBUG - Azure AI Project Client initialized successfully
+2025-09-02 16:22:00,450 - __main__ - DEBUG - Agent 'CalendarAgent' created successfully with ID: asst_D06wzM71XlIBvmZyPCCd5Uyq
+2025-09-02 16:22:00,859 - __main__ - DEBUG - Conversation thread created with ID: thread_syIKGnYPDwve0XYLfJumo7wr
+2025-09-02 16:22:00,860 - __main__ - DEBUG - Processing message in thread thread_syIKGnYPDwve0XYLfJumo7wr: What does my schedule look like next week?...
+2025-09-02 16:22:03,928 - __main__ - DEBUG - Executing tool call: read_schedule with args: ['start_iso', 'end_iso', 'timezone_name']
+2025-09-02 16:22:09,944 - __main__ - DEBUG - Message processed successfully
+2025-09-02 16:22:09,945 - __main__ - DEBUG - Processing message in thread thread_syIKGnYPDwve0XYLfJumo7wr: Am I free next Thursday 12:00–14:00?...
+2025-09-02 16:22:12,682 - __main__ - DEBUG - Executing tool call: read_schedule with args: ['start_iso', 'end_iso', 'timezone_name']
+2025-09-02 16:22:17,698 - __main__ - DEBUG - Message processed successfully
+2025-09-02 16:22:17,700 - __main__ - DEBUG - Processing message in thread thread_syIKGnYPDwve0XYLfJumo7wr: Book a 30-minute catch-up with alex@contoso.com next Thursday at 12:30, title 'Design sync'....
+2025-09-02 16:22:20,313 - __main__ - DEBUG - Executing tool call: create_meeting with args: ['subject', 'start_iso', 'end_iso', 'timezone_name', 'attendees', 'is_online_meeting']
+2025-09-02 16:22:20,313 - __main__ - ERROR - Error executing tool call create_meeting: create_meeting() missing 1 required positional argument: 'user_upn'
+2025-09-02 16:22:23,434 - __main__ - DEBUG - Message processed successfully

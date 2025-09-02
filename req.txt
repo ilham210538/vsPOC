@@ -11,3 +11,4 @@ azure-mgmt-storage>=21.0.0
 aiohttp>=3.8.0
 requests>=2.31.0
 typing-extensions>=4.5.0
+httpx>=0.25.0

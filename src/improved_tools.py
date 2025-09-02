@@ -154,14 +154,42 @@ async def _read_schedule_async(
         if top:
             url += f"&$top={int(top)}"
 
-        req = client.users.by_user_id(user).calendar_view.with_url(url)
-        request_info = req.to_get_request_information()
-        request_info.headers.add("Prefer", f'outlook.timezone="{tz}"')
-
-        result = await client.request_adapter.send_async(request_info, dict, None)
+        # Use direct HTTP request approach that works reliably
+        import httpx
         
-        logger.debug(f"Successfully retrieved {len(result.get('value', []))} events")
-        return result
+        # Get access token from credential
+        from azure.identity import ClientSecretCredential
+        cred = ClientSecretCredential(
+            tenant_id=os.environ["GRAPH_TENANT_ID"],
+            client_id=os.environ["GRAPH_CLIENT_ID"],
+            client_secret=os.environ["GRAPH_CLIENT_SECRET"],
+        )
+        
+        token = cred.get_token("https://graph.microsoft.com/.default")
+        
+        headers = {
+            "Authorization": f"Bearer {token.token}",
+            "Content-Type": "application/json",
+            "Prefer": f'outlook.timezone="{tz}"'
+        }
+        
+        async with httpx.AsyncClient() as http_client:
+            response = await http_client.get(url, headers=headers)
+            
+            if response.status_code == 200:
+                result = response.json()
+                logger.debug(f"Successfully retrieved {len(result.get('value', []))} events")
+                return result
+            else:
+                logger.error(f"HTTP {response.status_code}: {response.text}")
+                if response.status_code == 403:
+                    return {"error": "permission_denied", "message": "Insufficient permissions to read calendar."}
+                elif response.status_code == 401:
+                    return {"error": "authentication_failed", "message": "Authentication failed. Check credentials."}
+                elif response.status_code == 404:
+                    return {"error": "user_not_found", "message": f"User {user} not found."}
+                else:
+                    return {"error": "graph_api_error", "message": f"Graph API error {response.status_code}: {response.text}"}
         
     except APIError as ae:
         status = getattr(ae, "response_status_code", None)
@@ -184,10 +212,10 @@ async def _read_schedule_async(
         return {"error": "unexpected_error", "message": "Failed to read calendar"}
 
 def create_meeting(
-    user_upn: Optional[str],
     subject: str,
     start_iso: str,
     end_iso: str,
+    user_upn: Optional[str] = None,
     timezone_name: Optional[str] = None,
     attendees: Optional[List[str]] = None,
     body_html: Optional[str] = None,
@@ -199,10 +227,10 @@ def create_meeting(
     Creates an event on user's default calendar for the given window.
     
     Args:
-        user_upn: User principal name
-        subject: Meeting subject
-        start_iso: Start datetime in ISO format
-        end_iso: End datetime in ISO format
+        subject: Meeting subject (required)
+        start_iso: Start datetime in ISO format (required)
+        end_iso: End datetime in ISO format (required)
+        user_upn: User principal name (optional, uses default if not provided)
         timezone_name: Timezone name
         attendees: List of attendee email addresses
         body_html: Meeting body content
@@ -299,11 +327,57 @@ async def _create_meeting_async(
             event["isOnlineMeeting"] = True
             event["onlineMeetingProvider"] = "teamsForBusiness"
 
-        created = await client.users.by_user_id(user).events.post(body=event)
+        # Use direct HTTP request approach for reliability
+        import httpx
+        import json
         
-        # Extract event details safely
-        event_id = getattr(created, "id", None) or (created.get("id") if isinstance(created, dict) else None)
-        web_link = getattr(created, "web_link", None) or getattr(created, "webLink", None)
+        # Get access token from credential
+        from azure.identity import ClientSecretCredential
+        cred = ClientSecretCredential(
+            tenant_id=os.environ["GRAPH_TENANT_ID"],
+            client_id=os.environ["GRAPH_CLIENT_ID"],
+            client_secret=os.environ["GRAPH_CLIENT_SECRET"],
+        )
+        
+        token = cred.get_token("https://graph.microsoft.com/.default")
+        
+        headers = {
+            "Authorization": f"Bearer {token.token}",
+            "Content-Type": "application/json"
+        }
+        
+        url = f"https://graph.microsoft.com/v1.0/users/{user}/events"
+        
+        async with httpx.AsyncClient() as http_client:
+            response = await http_client.post(url, headers=headers, json=event)
+            
+            if response.status_code == 201:
+                created = response.json()
+                event_id = created.get("id")
+                web_link = created.get("webLink")
+                
+                logger.debug(f"Successfully created meeting with ID: {event_id}")
+                return {
+                    "status": "created", 
+                    "eventId": event_id, 
+                    "webLink": web_link,
+                    "subject": subject
+                }
+            else:
+                logger.error(f"HTTP {response.status_code}: {response.text}")
+                if response.status_code == 403:
+                    return {
+                        "error": "permission_denied", 
+                        "message": "Insufficient permissions. Ensure Calendars.ReadWrite permission is granted."
+                    }
+                elif response.status_code == 401:
+                    return {"error": "authentication_failed", "message": "Authentication failed. Check credentials."}
+                elif response.status_code == 404:
+                    return {"error": "user_not_found", "message": f"User {user} not found."}
+                elif response.status_code == 400:
+                    return {"error": "bad_request", "message": "Invalid meeting parameters provided."}
+                else:
+                    return {"error": "graph_api_error", "message": f"Graph API error {response.status_code}: {response.text}"}
         
         logger.debug(f"Successfully created meeting with ID: {event_id}")
         return {

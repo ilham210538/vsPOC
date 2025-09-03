@@ -125,3 +125,75 @@
 2025-09-03 16:13:56,451 - __main__ - DEBUG - Processing message in thread thread_ipXsMStSLeZn024HxUsTV1nv: Book a 30-minute catch-up with alex@contoso.com next Thursday at 12:30, title 'Design sync'....
 2025-09-03 16:13:59,726 - __main__ - DEBUG - Executing tool call: create_meeting with args: ['subject', 'start_iso', 'end_iso', 'timezone_name', 'attendees']
 2025-09-03 16:14:04,718 - __main__ - ERROR - Error processing message: ASSISTANT
+2025-09-03 22:57:51,982 - __main__ - DEBUG - Function tools initialized successfully
+2025-09-03 22:57:51,982 - __main__ - DEBUG - Azure AI Project Client initialized successfully
+2025-09-03 22:57:59,430 - __main__ - DEBUG - Agent 'CalendarAgent' created successfully with ID: asst_BmjpL4UYDVwJJtgGyhMhWnSp
+2025-09-03 22:57:59,880 - __main__ - DEBUG - Conversation thread created with ID: thread_bvYX9M0zqThBZkl1ZpdN7ucO
+2025-09-03 22:57:59,880 - __main__ - DEBUG - Processing message in thread thread_bvYX9M0zqThBZkl1ZpdN7ucO: What does my schedule look like next week?...
+2025-09-03 22:58:03,006 - __main__ - DEBUG - Executing tool call: read_schedule with args: ['start_iso', 'end_iso', 'timezone_name']
+2025-09-03 22:58:07,535 - __main__ - ERROR - Error processing message: ASSISTANT
+2025-09-03 22:58:07,535 - __main__ - DEBUG - Processing message in thread thread_bvYX9M0zqThBZkl1ZpdN7ucO: Am I free next Thursday 12:00–14:00?...
+2025-09-03 22:58:10,181 - __main__ - DEBUG - Executing tool call: read_schedule with args: ['start_iso', 'end_iso', 'timezone_name']
+2025-09-03 22:58:12,812 - __main__ - ERROR - Error processing message: ASSISTANT
+2025-09-03 22:58:12,812 - __main__ - DEBUG - Processing message in thread thread_bvYX9M0zqThBZkl1ZpdN7ucO: Book a 30-minute catch-up with alex@contoso.com next Thursday at 12:30, title 'Design sync'....
+2025-09-03 22:58:16,622 - __main__ - DEBUG - Executing tool call: create_meeting with args: ['subject', 'start_iso', 'end_iso', 'timezone_name', 'attendees', 'allow_new_time_proposals', 'is_online_meeting']
+2025-09-03 22:58:23,772 - __main__ - ERROR - Error processing message: ASSISTANT
+2025-09-03 23:15:46,963 - __main__ - DEBUG - Function tools initialized successfully
+2025-09-03 23:15:46,963 - __main__ - DEBUG - Azure AI Project Client initialized successfully
+2025-09-03 23:15:50,123 - __main__ - DEBUG - Agent 'CalendarAgent' created successfully with ID: asst_ZW54wRdsbyhLA5LWfYrrzAKZ
+2025-09-03 23:15:50,544 - __main__ - DEBUG - Conversation thread created with ID: thread_N9yVdyrEdQ0W4Toiwt9y0nec
+2025-09-03 23:15:50,545 - __main__ - DEBUG - Processing message in thread thread_N9yVdyrEdQ0W4Toiwt9y0nec: What does my schedule look like next week?...
+2025-09-03 23:15:53,395 - __main__ - DEBUG - Executing tool call: read_schedule with args: ['start_iso', 'end_iso', 'timezone_name']
+2025-09-03 23:16:06,725 - __main__ - ERROR - Error processing message: 'ItemPaged' object has no attribute 'data'
+2025-09-03 23:16:06,725 - __main__ - DEBUG - Processing message in thread thread_N9yVdyrEdQ0W4Toiwt9y0nec: Am I free next Thursday 12:00–14:00?...
+2025-09-03 23:16:10,915 - __main__ - ERROR - Run failed with status: RunStatus.FAILED
+2025-09-03 23:22:07,073 - __main__ - DEBUG - Function tools initialized successfully
+2025-09-03 23:22:07,075 - __main__ - DEBUG - Azure AI Project Client initialized successfully
+2025-09-03 23:22:10,987 - __main__ - DEBUG - Agent 'CalendarAgent' created successfully with ID: asst_RR4T5ChB5c7WVEHYWaJLectn
+2025-09-03 23:22:11,522 - __main__ - DEBUG - Conversation thread created with ID: thread_FyEShaQwBPTwkZWdHMN2Mrw2
+2025-09-03 23:22:11,522 - __main__ - DEBUG - Processing message in thread thread_FyEShaQwBPTwkZWdHMN2Mrw2: What does my schedule look like next week?...
+2025-09-03 23:22:14,203 - __main__ - DEBUG - Executing tool call: read_schedule with args: ['start_iso', 'end_iso', 'timezone_name']
+2025-09-03 23:22:26,715 - __main__ - DEBUG - Message processed successfully
+2025-09-03 23:22:26,715 - __main__ - DEBUG - Processing message in thread thread_FyEShaQwBPTwkZWdHMN2Mrw2: Am I free next Thursday 12:00–14:00?...
+2025-09-03 23:22:31,973 - __main__ - ERROR - Run failed with status: RunStatus.FAILED
+2025-09-03 23:22:31,974 - __main__ - ERROR - Error deleting agent: 'AgentsClient' object has no attribute 'delete'
+2025-09-03 23:27:00,089 - __main__ - DEBUG - Function tools initialized successfully
+2025-09-03 23:27:00,089 - __main__ - DEBUG - Azure AI Project Client initialized successfully
+2025-09-03 23:27:02,917 - __main__ - DEBUG - Agent 'CalendarAgent' created successfully with ID: asst_oVrHcp9xxKpID5rambF630wn
+2025-09-03 23:27:03,294 - __main__ - DEBUG - Conversation thread created with ID: thread_fnkM9B2W4CSbivRttbNOx8IC
+2025-09-03 23:27:03,295 - __main__ - DEBUG - Processing message in thread thread_fnkM9B2W4CSbivRttbNOx8IC: What does my schedule look like next week?...
+2025-09-03 23:27:05,773 - __main__ - DEBUG - Executing tool call: read_schedule with args: ['start_iso', 'end_iso', 'timezone_name']
+2025-09-03 23:27:18,608 - __main__ - DEBUG - Message processed successfully
+2025-09-03 23:27:21,610 - __main__ - DEBUG - Processing message in thread thread_fnkM9B2W4CSbivRttbNOx8IC: Am I free next Thursday 12:00–14:00?...
+2025-09-03 23:27:28,078 - __main__ - ERROR - Run failed. Status: RunStatus.FAILED
+2025-09-03 23:27:28,509 - __main__ - DEBUG - Agent asst_oVrHcp9xxKpID5rambF630wn deleted successfully
+2025-09-03 23:32:09,466 - __main__ - DEBUG - Function tools initialized successfully
+2025-09-03 23:32:09,466 - __main__ - DEBUG - Azure AI Project Client initialized successfully
+2025-09-03 23:32:12,326 - __main__ - DEBUG - Agent 'CalendarAgent' created successfully with ID: asst_PEOCFVcsCqijKDqhL4gNorC7
+2025-09-03 23:32:12,744 - __main__ - DEBUG - Conversation thread created with ID: thread_1RihAYTzgJGv9CxkYFUoo9Tq
+2025-09-03 23:32:12,744 - __main__ - DEBUG - Processing message in thread thread_1RihAYTzgJGv9CxkYFUoo9Tq: What does my schedule look like next week?...
+2025-09-03 23:32:15,578 - __main__ - DEBUG - Executing tool call: read_schedule with args: ['start_iso', 'end_iso', 'timezone_name']
+2025-09-03 23:32:36,033 - __main__ - DEBUG - Message processed successfully
+2025-09-03 23:32:39,039 - __main__ - DEBUG - Processing message in thread thread_1RihAYTzgJGv9CxkYFUoo9Tq: Am I free next Thursday 12:00–14:00?...
+2025-09-03 23:32:55,334 - __main__ - ERROR - Run failed. Status: RunStatus.FAILED
+2025-09-03 23:32:55,770 - __main__ - DEBUG - Agent asst_PEOCFVcsCqijKDqhL4gNorC7 deleted successfully
+2025-09-03 23:34:49,281 - __main__ - DEBUG - Function tools initialized successfully
+2025-09-03 23:34:49,281 - __main__ - DEBUG - Azure AI Project Client initialized successfully
+2025-09-03 23:34:52,141 - __main__ - DEBUG - Agent 'CalendarAgent' created successfully with ID: asst_gjuGzpoAQKnLp7XwSQQlQo2o
+2025-09-03 23:34:52,527 - __main__ - DEBUG - Conversation thread created with ID: thread_gbZwLtqAXiBxrryCDrxPSGMD
+2025-09-03 23:34:52,527 - __main__ - DEBUG - Processing message in thread thread_gbZwLtqAXiBxrryCDrxPSGMD: What does my schedule look like next week?...
+2025-09-03 23:34:56,097 - __main__ - DEBUG - Executing tool call: read_schedule with args: ['start_iso', 'end_iso', 'timezone_name']
+2025-09-03 23:35:16,703 - __main__ - DEBUG - Message processed successfully
+2025-09-03 23:35:21,711 - __main__ - DEBUG - Processing message in thread thread_gbZwLtqAXiBxrryCDrxPSGMD: Am I free next Thursday 12:00–14:00?...
+2025-09-03 23:35:27,680 - __main__ - ERROR - Run failed. Status: RunStatus.FAILED
+2025-09-03 23:35:28,086 - __main__ - DEBUG - Agent asst_gjuGzpoAQKnLp7XwSQQlQo2o deleted successfully
+2025-09-03 23:36:47,645 - __main__ - DEBUG - Function tools initialized successfully
+2025-09-03 23:36:47,645 - __main__ - DEBUG - Azure AI Project Client initialized successfully
+2025-09-03 23:36:50,434 - __main__ - DEBUG - Agent 'CalendarAgent' created successfully with ID: asst_KiULMwsoT0diY0MsuHwtFVn1
+2025-09-03 23:36:50,851 - __main__ - DEBUG - Conversation thread created with ID: thread_wiWBJ13LymJAnxAGSP8u4n6a
+2025-09-03 23:36:50,851 - __main__ - DEBUG - Processing message in thread thread_wiWBJ13LymJAnxAGSP8u4n6a: What does my schedule look like next week?...
+2025-09-03 23:36:54,535 - __main__ - DEBUG - Executing tool call: read_schedule with args: ['start_iso', 'end_iso', 'timezone_name']
+2025-09-03 23:37:09,432 - __main__ - DEBUG - Message processed successfully
+2025-09-03 23:37:14,446 - __main__ - DEBUG - Processing message in thread thread_wiWBJ13LymJAnxAGSP8u4n6a: Am I free next Thursday 12:00–14:00?...
+2025-09-03 23:37:20,463 - __main__ - ERROR - Run failed. Status: RunStatus.FAILED
+2025-09-03 23:37:20,463 - __main__ - ERROR - Main execution failed: 'CalendarAgent' object has no attribute 'delete_agent'

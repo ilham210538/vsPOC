@@ -57,3 +57,20 @@ Content: {"error":"invalid_request","error_description":"AADSTS50027: JWT token 
 2025-09-03 16:13:53,939 - improved_tools - ERROR - HTTP 403: {"error":{"code":"ErrorAccessDenied","message":"Access is denied. Check credentials and try again."}}
 2025-09-03 16:13:59,727 - improved_tools - DEBUG - Creating meeting 'Design sync' for user: default
 2025-09-03 16:14:00,842 - improved_tools - ERROR - HTTP 403: {"error":{"code":"ErrorAccessDenied","message":"Access is denied. Check credentials and try again."}}
+2025-09-03 22:58:03,006 - improved_tools - DEBUG - Reading schedule for user: default
+2025-09-03 22:58:05,430 - improved_tools - DEBUG - Retrieved 0 events
+2025-09-03 22:58:10,181 - improved_tools - DEBUG - Reading schedule for user: default
+2025-09-03 22:58:10,719 - improved_tools - DEBUG - Retrieved 0 events
+2025-09-03 22:58:16,622 - improved_tools - DEBUG - Creating meeting 'Design sync' for user: default
+2025-09-03 23:15:53,395 - improved_tools - DEBUG - Reading schedule for user: default
+2025-09-03 23:15:55,624 - improved_tools - DEBUG - Retrieved 7 events
+2025-09-03 23:22:14,203 - improved_tools - DEBUG - Reading schedule for user: default
+2025-09-03 23:22:15,757 - improved_tools - DEBUG - Retrieved 5 events
+2025-09-03 23:27:05,773 - improved_tools - DEBUG - Reading schedule for user: default
+2025-09-03 23:27:07,322 - improved_tools - DEBUG - Retrieved 5 events
+2025-09-03 23:32:15,578 - improved_tools - DEBUG - Reading schedule for user: default
+2025-09-03 23:32:17,180 - improved_tools - DEBUG - Retrieved 7 events
+2025-09-03 23:34:56,097 - improved_tools - DEBUG - Reading schedule for user: default
+2025-09-03 23:34:58,864 - improved_tools - DEBUG - Retrieved 7 events
+2025-09-03 23:36:54,535 - improved_tools - DEBUG - Reading schedule for user: default
+2025-09-03 23:36:56,818 - improved_tools - DEBUG - Retrieved 7 events

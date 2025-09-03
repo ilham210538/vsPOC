@@ -148,9 +148,9 @@ def _get_app_token() -> str:
             client_secret=os.environ["GRAPH_CLIENT_SECRET"],
         )
     
-    print(f"🔑 Requesting token with scope: {GRAPH_SCOPE_DEFAULT}")
-    print(f"🏢 Tenant ID: {os.environ['GRAPH_TENANT_ID']}")
-    print(f"👤 Client ID: {os.environ['GRAPH_CLIENT_ID']}")
+    print(f"Requesting token with scope: {GRAPH_SCOPE_DEFAULT}")
+    print(f"Tenant ID: {os.environ['GRAPH_TENANT_ID']}")
+    print(f"Client ID: {os.environ['GRAPH_CLIENT_ID']}")
     
     token_response = cred.get_token(GRAPH_SCOPE_DEFAULT)
     token = token_response.token
@@ -184,6 +184,11 @@ def read_schedule(
             raise ValueError("user_upn is required")
 
         now_utc = datetime.now(timezone.utc)
+        # Ensure we're working with 2025 dates
+        current_year = 2025
+        if now_utc.year != current_year:
+            # Override with September 3, 2025 for demo purposes
+            now_utc = datetime(2025, 9, 3, 12, 0, 0, tzinfo=timezone.utc)
         if not start_iso or not end_iso:
             start_iso = now_utc.isoformat()
             end_iso = (now_utc + timedelta(days=7)).isoformat()
@@ -227,8 +232,8 @@ async def _read_schedule_async(
             url += f"&$top={int(top)}"
 
         # Print the exact call being made
-        print(f"➡️  GET {url}")
-        print(f"   Prefer TZ: {tz}")
+        print(f"API Call: GET {url}")
+        print(f"Timezone: {tz}")
 
         import httpx
         access_token = _get_app_token()
@@ -243,11 +248,11 @@ async def _read_schedule_async(
             if resp.status_code == 200:
                 data = resp.json()
                 logger.debug(f"Retrieved {len(data.get('value', []))} events")
-                print(f"✅ Events returned: {len(data.get('value', []))}")
+                print(f"Events retrieved: {len(data.get('value', []))}")
                 return data
 
             logger.error(f"HTTP {resp.status_code}: {resp.text}")
-            print(f"❌ HTTP {resp.status_code}: {resp.text}")
+            print(f"HTTP Error {resp.status_code}: {resp.text}")
             if resp.status_code == 403:
                 return {"error": "permission_denied", "message": "App lacks required Application permissions."}
             if resp.status_code == 401:
@@ -258,7 +263,7 @@ async def _read_schedule_async(
 
     except Exception as e:
         logger.error(f"Unexpected error in calendar reading: {e}")
-        print(f"❌ Unexpected error in calendar reading: {e}")
+        print(f"Error in calendar reading: {e}")
         return {"error": "unexpected_error", "message": "Failed to read calendar"}
 
 def create_meeting(
@@ -354,8 +359,8 @@ async def _create_meeting_async(
             event["onlineMeetingProvider"] = "teamsForBusiness"
 
         url = f"https://graph.microsoft.com/v1.0/users/{user}/events"
-        print(f"➡️  POST {url}")
-        print(f"   Payload subject: {subject}")
+        print(f"API Call: POST {url}")
+        print(f"Meeting Subject: {subject}")
 
         import httpx
         access_token = _get_app_token()
@@ -365,7 +370,7 @@ async def _create_meeting_async(
             resp = await http_client.post(url, headers=headers, json=event)
             if resp.status_code == 201:
                 created = resp.json()
-                print(f"✅ Event created: {created.get('id')}")
+                print(f"Event created successfully: {created.get('id')}")
                 return {
                     "status": "created",
                     "eventId": created.get("id"),
@@ -374,7 +379,7 @@ async def _create_meeting_async(
                 }
 
             logger.error(f"HTTP {resp.status_code}: {resp.text}")
-            print(f"❌ HTTP {resp.status_code}: {resp.text}")
+            print(f"HTTP Error {resp.status_code}: {resp.text}")
             if resp.status_code == 403:
                 return {"error": "permission_denied", "message": "App lacks Calendars.ReadWrite (Application)."}
             if resp.status_code == 401:
@@ -387,5 +392,5 @@ async def _create_meeting_async(
 
     except Exception as e:
         logger.error(f"Unexpected error in meeting creation: {e}")
-        print(f"❌ Unexpected error in meeting creation: {e}")
+        print(f"Error in meeting creation: {e}")
         return {"error": "unexpected_error", "message": "Failed to create meeting"}

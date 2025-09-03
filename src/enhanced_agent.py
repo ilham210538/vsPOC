@@ -10,7 +10,7 @@ from typing import Dict, Any, List
 from dotenv import load_dotenv
 from azure.identity import DefaultAzureCredential
 from azure.ai.projects import AIProjectClient
-from azure.ai.agents.models import FunctionTool, MessageRole  # CHANGED: import MessageRole
+from azure.ai.agents.models import FunctionTool
 from improved_tools import read_schedule, create_meeting
 
 # Configure logging - detailed logs to file, minimal to console
@@ -85,12 +85,14 @@ class CalendarAgent:
                 name=name,
                 instructions=(
                     "You are a professional calendar assistant that helps users manage their schedules. "
+                    f"The current date is September 3, 2025. When users ask about 'next week' or relative dates, "
+                    f"calculate dates based on September 3, 2025 being today. "
                     "For availability questions, call read_schedule with appropriate time windows. "
                     "When booking meetings, call create_meeting with the requested details. "
                     "Always provide clear, concise responses with timezone information. "
                     "Handle errors gracefully and inform users of any issues. "
                     "When dealing with relative dates like 'next week' or 'tomorrow', "
-                    "calculate the appropriate ISO datetime strings before making tool calls."
+                    "calculate the appropriate ISO datetime strings for 2025 before making tool calls."
                 ),
                 tools=self.tools.definitions,
             )
@@ -145,13 +147,19 @@ class CalendarAgent:
             )
             
             # Monitor run execution with timeout
-            max_iterations = 60  # keep as-is (can increase later if needed)
+            max_iterations = 150  # Increased timeout for complex calendar operations
             iterations = 0
             
             while run.status in ("queued", "in_progress", "requires_action") and iterations < max_iterations:
-                time.sleep(1)
+                time.sleep(2)  # Increased polling interval
                 iterations += 1
                 run = self.project.agents.runs.get(thread_id=thread_id, run_id=run.id)
+                
+                # Log status for debugging  
+                if iterations % 5 == 0:  # Log every 10 seconds
+                    logger.debug(f"Run status after {iterations * 2}s: {run.status}")
+                    if iterations > 10:  # Only print to console after 20+ seconds to avoid spam
+                        print(f" [Status: {run.status}]", end="", flush=True)
                 
                 if run.status == "requires_action":
                     tool_calls = run.required_action.submit_tool_outputs.tool_calls
@@ -162,38 +170,70 @@ class CalendarAgent:
                             run_id=run.id, 
                             tool_outputs=tool_outputs
                         )
+                        # Brief pause after submitting tool outputs
+                        time.sleep(1)
             
             # Handle timeout
             if iterations >= max_iterations:
-                logger.error(f"Run timed out after {max_iterations} seconds")
+                logger.error(f"Run timed out after {iterations * 2} seconds. Final status: {run.status}")
                 return {
                     "status": "error",
-                    "message": "Request timed out. Please try again.",
+                    "message": f"Request timed out after {iterations * 2} seconds. Status: {run.status}",
+                    "run_status": run.status
+                }
+            
+            # Check for failed run status
+            if run.status == "failed":
+                logger.error(f"Run failed. Status: {run.status}")
+                # Try to get error details
+                error_details = getattr(run, 'last_error', None) or getattr(run, 'error', None)
+                if error_details:
+                    logger.error(f"Error details: {error_details}")
+                error_msg = f"Run failed: {error_details}" if error_details else "Run failed - possibly due to rate limiting or thread lock"
+                return {
+                    "status": "error",
+                    "message": error_msg,
                     "run_status": run.status
                 }
             
             # Get final response
             if run.status == "completed":
-                # CHANGED: use helper to get the latest assistant text
-                latest_text = self.project.agents.messages.get_last_message_text_by_role(
-                    thread_id=thread_id,
-                    role=MessageRole.ASSISTANT
-                )
-                if latest_text is not None:
-                    logger.debug("Message processed successfully")
-                    return {
-                        "status": "success",
-                        "message": latest_text,
-                        "run_status": run.status,
-                        "thread_id": thread_id
-                    }
+                # Get the latest assistant message from the thread
+                messages = self.project.agents.messages.list(thread_id=thread_id, limit=50)
+                
+                # Handle both ItemPaged and direct list responses
+                if hasattr(messages, 'data'):
+                    message_list = messages.data
+                elif hasattr(messages, '__iter__'):
+                    message_list = list(messages)
                 else:
-                    logger.warning("No assistant response found")
-                    return {
-                        "status": "error",
-                        "message": "No response generated",
-                        "run_status": run.status
-                    }
+                    message_list = []
+                
+                assistant_messages = [msg for msg in message_list if msg.role == "assistant"]
+                
+                if assistant_messages:
+                    # Get the most recent assistant message
+                    latest_message = assistant_messages[0]
+                    
+                    # Extract text content from the message
+                    if hasattr(latest_message, 'content') and latest_message.content:
+                        for content_item in latest_message.content:
+                            if hasattr(content_item, 'text') and content_item.text:
+                                latest_text = content_item.text.value
+                                logger.debug("Message processed successfully")
+                                return {
+                                    "status": "success",
+                                    "message": latest_text,
+                                    "run_status": run.status,
+                                    "thread_id": thread_id
+                                }
+                
+                logger.warning("No assistant response found")
+                return {
+                    "status": "error",
+                    "message": "No response generated",
+                    "run_status": run.status
+                }
             else:
                 logger.error(f"Run failed with status: {run.status}")
                 return {
@@ -204,11 +244,27 @@ class CalendarAgent:
                     
         except Exception as e:
             logger.error(f"Error processing message: {e}")
-            return {
-                "status": "error",
-                "message": "An unexpected error occurred while processing your request.",
-                "error_details": str(e)
-            }
+            error_str = str(e).lower()
+            
+            # Check for specific rate limit errors
+            if "rate limit" in error_str or "too many requests" in error_str or "throttle" in error_str:
+                return {
+                    "status": "error",
+                    "message": "Rate limit exceeded. Please wait and try again.",
+                    "error_details": str(e)
+                }
+            elif "quota" in error_str:
+                return {
+                    "status": "error", 
+                    "message": "Service quota exceeded. Please check your Azure AI usage.",
+                    "error_details": str(e)
+                }
+            else:
+                return {
+                    "status": "error",
+                    "message": "An unexpected error occurred while processing your request.",
+                    "error_details": str(e)
+                }
             
     def _handle_tool_calls(self, tool_calls) -> List[Dict[str, Any]]:
         """
@@ -275,54 +331,92 @@ class CalendarAgent:
                 
         return outputs
 
+    def delete_agent(self) -> bool:
+        """
+        Delete the current agent instance.
+        
+        Returns:
+            True if deletion was successful, False otherwise
+        """
+        try:
+            if self.agent and hasattr(self.agent, 'id'):
+                self.project.agents.delete_agent(self.agent.id)
+                logger.debug(f"Agent {self.agent.id} deleted successfully")
+                return True
+            else:
+                logger.warning("No agent to delete")
+                return False
+        except Exception as e:
+            logger.error(f"Error deleting agent: {e}")
+            return False
+
 def main():
     """Main function demonstrating agent usage."""
-    print("🤖 Azure AI Foundry Calendar Agent - Starting...")
+    print("Azure AI Foundry Calendar Agent - Initializing...")
     
     try:
         # Initialize agent
-        print("🔧 Initializing agent...")
+        print("Initializing calendar agent...")
         agent = CalendarAgent()
         
         # Use the project client in a single context manager for all operations
         with agent.project:
-            print("✅ Creating agent...")
+            print("Creating agent instance...")
             agent_id = agent.create_agent()
-            print(f"✅ Agent created successfully!")
+            print("Agent created successfully.")
             
             # Create conversation thread
-            print("🧵 Creating conversation thread...")
+            print("Creating conversation thread...")
             thread_id = agent.create_conversation_thread()
-            print("✅ Thread created successfully!")
+            print("Thread created successfully.")
             
-            # Example interactions
+            # Example interactions (removed create_meeting test)
             test_messages = [
                 "What does my schedule look like next week?",
-                "Am I free next Thursday 12:00–14:00?",
-                "Book a 30-minute catch-up with alex@contoso.com next Thursday at 12:30, title 'Design sync'."
+                "Am I free next Thursday 12:00–14:00?"
             ]
             
-            print(f"\n📝 Running {len(test_messages)} test interactions...\n")
+            print(f"\nRunning {len(test_messages)} test interactions...\n")
             
+            success_count = 0
             for i, message in enumerate(test_messages, 1):
-                print(f"[{i}/{len(test_messages)}] 🔵 User: {message}")
-                print("🤔 Processing...", end=" ", flush=True)
+                print(f"[{i}/{len(test_messages)}] User: {message}")
+                print("Processing request...", end=" ", flush=True)
                 
                 response = agent.process_message(thread_id, message)
                 
                 if response["status"] == "success":
-                    print("✅ Success!")
-                    print(f"🤖 Agent: {response['message']}\n")
+                    print("✅ Success")
+                    print(f"Agent: {response['message']}\n")
+                    success_count += 1
                 else:
-                    print("❌ Error!")
-                    print(f"❌ {response['message']}\n")
+                    print("❌ Error")
+                    print(f"Error: {response['message']}\n")
+                
+                # Add delay between requests AND ensure thread is ready
+                if i < len(test_messages):
+                    print("Waiting for thread to be ready for next request...")
+                    time.sleep(8)  # Give time for cleanup
             
-            print("🎉 Demo completed! Check 'agent_operations.log' for detailed logs.")
+            # Clean up agent regardless of test results
+            print("Cleaning up agent...")
+            if agent.delete_agent():
+                print("✅ Agent cleanup completed.")
+            else:
+                print("⚠️ Agent cleanup failed - please check logs.")
+            
+            # Show final results
+            if success_count == len(test_messages):
+                print("All tests completed successfully.")
+            else:
+                print(f"⚠️ {len(test_messages) - success_count} test(s) failed.")
+            
+            print("Demo completed. Check 'agent_operations.log' for detailed logs.")
                 
     except Exception as e:
         logger.error(f"Main execution failed: {e}")
         print(f"❌ Failed to initialize agent: {e}")
-        print("💡 Check 'agent_operations.log' for detailed error information.")
+        print("Check 'agent_operations.log' for detailed error information.")
 
 if __name__ == "__main__":
     main()

@@ -10,7 +10,7 @@ from typing import Dict, Any, List
 from dotenv import load_dotenv
 from azure.identity import DefaultAzureCredential
 from azure.ai.projects import AIProjectClient
-from azure.ai.agents.models import FunctionTool
+from azure.ai.agents.models import FunctionTool, MessageRole  # CHANGED: import MessageRole
 from improved_tools import read_schedule, create_meeting
 
 # Configure logging - detailed logs to file, minimal to console
@@ -111,10 +111,8 @@ class CalendarAgent:
         """
         try:
             thread = self.project.agents.threads.create()
-                
             logger.debug(f"Conversation thread created with ID: {thread.id}")
             return thread.id
-            
         except Exception as e:
             logger.error(f"Failed to create conversation thread: {e}")
             raise
@@ -147,18 +145,17 @@ class CalendarAgent:
             )
             
             # Monitor run execution with timeout
-            max_iterations = 60  # 60 seconds timeout
+            max_iterations = 60  # keep as-is (can increase later if needed)
             iterations = 0
             
             while run.status in ("queued", "in_progress", "requires_action") and iterations < max_iterations:
                 time.sleep(1)
                 iterations += 1
-                
                 run = self.project.agents.runs.get(thread_id=thread_id, run_id=run.id)
                 
                 if run.status == "requires_action":
-                    tool_outputs = self._handle_tool_calls(run.required_action.submit_tool_outputs.tool_calls)
-                    
+                    tool_calls = run.required_action.submit_tool_outputs.tool_calls
+                    tool_outputs = self._handle_tool_calls(tool_calls)
                     if tool_outputs:
                         self.project.agents.runs.submit_tool_outputs(
                             thread_id=thread_id, 
@@ -177,15 +174,16 @@ class CalendarAgent:
             
             # Get final response
             if run.status == "completed":
-                messages = list(self.project.agents.messages.list(thread_id=thread_id))
-                assistant_messages = [m for m in messages if m.get("role") == "assistant"]
-                
-                if assistant_messages:
-                    latest_message = assistant_messages[0]  # Most recent first
+                # CHANGED: use helper to get the latest assistant text
+                latest_text = self.project.agents.messages.get_last_message_text_by_role(
+                    thread_id=thread_id,
+                    role=MessageRole.ASSISTANT
+                )
+                if latest_text is not None:
                     logger.debug("Message processed successfully")
                     return {
                         "status": "success",
-                        "message": latest_message.get("content", [{}])[0].get("text", {}).get("value", ""),
+                        "message": latest_text,
                         "run_status": run.status,
                         "thread_id": thread_id
                     }

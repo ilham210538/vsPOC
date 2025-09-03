@@ -1,0 +1,59 @@
+2025-09-03 09:37:03,605 - improved_tools - DEBUG - Graph client configured for tenant: 1f3f9d61...
+2025-09-03 09:37:14,482 - improved_tools - DEBUG - Reading schedule for user: default
+2025-09-03 09:37:17,112 - improved_tools - ERROR - HTTP 403: {"error":{"code":"ErrorAccessDenied","message":"Access is denied. Check credentials and try again."}}
+2025-09-03 09:37:23,054 - improved_tools - DEBUG - Reading schedule for user: default
+2025-09-03 09:37:25,133 - improved_tools - ERROR - HTTP 403: {"error":{"code":"ErrorAccessDenied","message":"Access is denied. Check credentials and try again."}}
+2025-09-03 09:37:31,037 - improved_tools - DEBUG - Creating meeting 'Design sync' for user: default
+2025-09-03 09:37:33,800 - improved_tools - ERROR - HTTP 403: {"error":{"code":"ErrorAccessDenied","message":"Access is denied. Check credentials and try again."}}
+2025-09-03 10:58:24,380 - improved_tools - DEBUG - Reading schedule for user: default
+2025-09-03 11:13:25,842 - improved_tools - ERROR - Unexpected error in calendar reading: Timed out waiting for user to authenticate
+2025-09-03 11:13:33,521 - improved_tools - DEBUG - Reading schedule for user: default
+2025-09-03 11:15:38,817 - improved_tools - DEBUG - Reading schedule for user: default
+2025-09-03 11:15:38,861 - improved_tools - ERROR - Unexpected error in calendar reading: OBO mode requires USER_ASSERTION and GRAPH_CLIENT_SECRET.
+2025-09-03 11:15:43,837 - improved_tools - DEBUG - Reading schedule for user: default
+2025-09-03 11:15:43,839 - improved_tools - ERROR - Unexpected error in calendar reading: OBO mode requires USER_ASSERTION and GRAPH_CLIENT_SECRET.
+2025-09-03 11:15:50,592 - improved_tools - DEBUG - Creating meeting 'Design sync' for user: default
+2025-09-03 11:15:50,594 - improved_tools - ERROR - Unexpected error in meeting creation: OBO mode requires USER_ASSERTION and GRAPH_CLIENT_SECRET.
+2025-09-03 11:50:03,140 - improved_tools - DEBUG - Reading schedule for user: default
+2025-09-03 11:50:04,846 - improved_tools - ERROR - Unexpected error in calendar reading: Authentication failed: AADSTS50027: JWT token is invalid or malformed. Trace ID: 5132047e-4688-4540-8ba5-bb7e13d4c000 Correlation ID: 400b0b5e-f92f-4d97-aac3-501a59a307ae Timestamp: 2025-09-03 03:50:05Z
+Content: {"error":"invalid_request","error_description":"AADSTS50027: JWT token is invalid or malformed. Trace ID: 5132047e-4688-4540-8ba5-bb7e13d4c000 Correlation ID: 400b0b5e-f92f-4d97-aac3-501a59a307ae Timestamp: 2025-09-03 03:50:05Z","error_codes":[50027],"timestamp":"2025-09-03 03:50:05Z","trace_id":"5132047e-4688-4540-8ba5-bb7e13d4c000","correlation_id":"400b0b5e-f92f-4d97-aac3-501a59a307ae","error_uri":"https://login.microsoftonline.com/error?code=50027"}
+2025-09-03 11:50:10,063 - improved_tools - DEBUG - Reading schedule for user: default
+2025-09-03 11:50:11,703 - improved_tools - ERROR - Unexpected error in calendar reading: Authentication failed: AADSTS50027: JWT token is invalid or malformed. Trace ID: 7c90067c-360b-466d-a030-5020c75c4100 Correlation ID: 5aafb1bd-cf07-44a4-99fd-1ef071d90865 Timestamp: 2025-09-03 03:50:12Z
+Content: {"error":"invalid_request","error_description":"AADSTS50027: JWT token is invalid or malformed. Trace ID: 7c90067c-360b-466d-a030-5020c75c4100 Correlation ID: 5aafb1bd-cf07-44a4-99fd-1ef071d90865 Timestamp: 2025-09-03 03:50:12Z","error_codes":[50027],"timestamp":"2025-09-03 03:50:12Z","trace_id":"7c90067c-360b-466d-a030-5020c75c4100","correlation_id":"5aafb1bd-cf07-44a4-99fd-1ef071d90865","error_uri":"https://login.microsoftonline.com/error?code=50027"}
+2025-09-03 11:50:18,256 - improved_tools - DEBUG - Creating meeting 'Design sync' for user: default
+2025-09-03 11:50:19,724 - improved_tools - ERROR - Unexpected error in meeting creation: Authentication failed: AADSTS50027: JWT token is invalid or malformed. Trace ID: 0d9bba71-2712-4edd-9f26-8318022a4f00 Correlation ID: 3f898c2a-b662-441a-9dd0-16a7b0188eb6 Timestamp: 2025-09-03 03:50:20Z
+Content: {"error":"invalid_request","error_description":"AADSTS50027: JWT token is invalid or malformed. Trace ID: 0d9bba71-2712-4edd-9f26-8318022a4f00 Correlation ID: 3f898c2a-b662-441a-9dd0-16a7b0188eb6 Timestamp: 2025-09-03 03:50:20Z","error_codes":[50027],"timestamp":"2025-09-03 03:50:20Z","trace_id":"0d9bba71-2712-4edd-9f26-8318022a4f00","correlation_id":"3f898c2a-b662-441a-9dd0-16a7b0188eb6","error_uri":"https://login.microsoftonline.com/error?code=50027"}
+2025-09-03 12:07:24,408 - improved_tools - DEBUG - Reading schedule for user: default
+2025-09-03 12:07:29,625 - improved_tools - ERROR - HTTP 403: {"error":{"code":"ErrorAccessDenied","message":"Access is denied. Check credentials and try again."}}
+2025-09-03 12:07:36,487 - improved_tools - DEBUG - Reading schedule for user: default
+2025-09-03 12:07:39,200 - improved_tools - ERROR - HTTP 403: {"error":{"code":"ErrorAccessDenied","message":"Access is denied. Check credentials and try again."}}
+2025-09-03 12:07:44,188 - improved_tools - DEBUG - Creating meeting 'Design sync' for user: default
+2025-09-03 12:07:47,033 - improved_tools - ERROR - HTTP 403: {"error":{"code":"ErrorAccessDenied","message":"Access is denied. Check credentials and try again."}}
+2025-09-03 13:47:14,789 - improved_tools - DEBUG - Reading schedule for user: default
+2025-09-03 13:47:16,851 - improved_tools - ERROR - HTTP 403: {"error":{"code":"ErrorAccessDenied","message":"Access is denied. Check credentials and try again."}}
+2025-09-03 13:47:23,674 - improved_tools - DEBUG - Reading schedule for user: default
+2025-09-03 13:47:25,410 - improved_tools - ERROR - HTTP 403: {"error":{"code":"ErrorAccessDenied","message":"Access is denied. Check credentials and try again."}}
+2025-09-03 13:47:32,082 - improved_tools - DEBUG - Creating meeting 'Design sync' for user: default
+2025-09-03 13:47:34,117 - improved_tools - ERROR - HTTP 403: {"error":{"code":"ErrorAccessDenied","message":"Access is denied. Check credentials and try again."}}
+2025-09-03 14:15:25,528 - improved_tools - DEBUG - Reading schedule for user: default
+2025-09-03 14:15:28,083 - improved_tools - ERROR - HTTP 403: {"error":{"code":"ErrorAccessDenied","message":"Access is denied. Check credentials and try again."}}
+2025-09-03 14:15:39,306 - improved_tools - DEBUG - Creating meeting 'Design sync' for user: default
+2025-09-03 14:15:41,762 - improved_tools - ERROR - HTTP 403: {"error":{"code":"ErrorAccessDenied","message":"Access is denied. Check credentials and try again."}}
+2025-09-03 14:21:31,610 - improved_tools - DEBUG - Reading schedule for user: default
+2025-09-03 14:21:33,607 - improved_tools - ERROR - HTTP 403: {"error":{"code":"ErrorAccessDenied","message":"Access is denied. Check credentials and try again."}}
+2025-09-03 14:21:38,652 - improved_tools - DEBUG - Reading schedule for user: default
+2025-09-03 14:21:39,343 - improved_tools - ERROR - HTTP 403: {"error":{"code":"ErrorAccessDenied","message":"Access is denied. Check credentials and try again."}}
+2025-09-03 14:21:44,486 - improved_tools - DEBUG - Creating meeting 'Design sync' for user: default
+2025-09-03 14:21:45,280 - improved_tools - ERROR - HTTP 403: {"error":{"code":"ErrorAccessDenied","message":"Access is denied. Check credentials and try again."}}
+2025-09-03 15:33:48,132 - improved_tools - DEBUG - Reading schedule for user: default
+2025-09-03 15:33:50,847 - improved_tools - ERROR - HTTP 403: {"error":{"code":"ErrorAccessDenied","message":"Access is denied. Check credentials and try again."}}
+2025-09-03 15:33:58,057 - improved_tools - DEBUG - Reading schedule for user: default
+2025-09-03 15:33:59,038 - improved_tools - ERROR - HTTP 403: {"error":{"code":"ErrorAccessDenied","message":"Access is denied. Check credentials and try again."}}
+2025-09-03 15:34:05,900 - improved_tools - DEBUG - Creating meeting 'Design sync' for user: default
+2025-09-03 15:34:06,737 - improved_tools - ERROR - HTTP 403: {"error":{"code":"ErrorAccessDenied","message":"Access is denied. Check credentials and try again."}}
+2025-09-03 16:13:42,163 - improved_tools - DEBUG - Reading schedule for user: default
+2025-09-03 16:13:45,878 - improved_tools - ERROR - HTTP 403: {"error":{"code":"ErrorAccessDenied","message":"Access is denied. Check credentials and try again."}}
+2025-09-03 16:13:53,044 - improved_tools - DEBUG - Reading schedule for user: default
+2025-09-03 16:13:53,939 - improved_tools - ERROR - HTTP 403: {"error":{"code":"ErrorAccessDenied","message":"Access is denied. Check credentials and try again."}}
+2025-09-03 16:13:59,727 - improved_tools - DEBUG - Creating meeting 'Design sync' for user: default
+2025-09-03 16:14:00,842 - improved_tools - ERROR - HTTP 403: {"error":{"code":"ErrorAccessDenied","message":"Access is denied. Check credentials and try again."}}

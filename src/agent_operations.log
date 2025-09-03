@@ -1,0 +1,127 @@
+2025-09-03 09:37:03,611 - __main__ - DEBUG - Function tools initialized successfully
+2025-09-03 09:37:03,620 - __main__ - DEBUG - Azure AI Project Client initialized successfully
+2025-09-03 09:37:10,763 - __main__ - DEBUG - Agent 'CalendarAgent' created successfully with ID: asst_obu5YxJ5Ojv9X3TmnOmtTq3Y
+2025-09-03 09:37:11,271 - __main__ - DEBUG - Conversation thread created with ID: thread_IxORBrmt5Ipu5vfVW2d4i0Dp
+2025-09-03 09:37:11,272 - __main__ - DEBUG - Processing message in thread thread_IxORBrmt5Ipu5vfVW2d4i0Dp: What does my schedule look like next week?...
+2025-09-03 09:37:14,480 - __main__ - DEBUG - Executing tool call: read_schedule with args: ['start_iso', 'end_iso', 'timezone_name']
+2025-09-03 09:37:20,486 - __main__ - DEBUG - Message processed successfully
+2025-09-03 09:37:20,487 - __main__ - DEBUG - Processing message in thread thread_IxORBrmt5Ipu5vfVW2d4i0Dp: Am I free next Thursday 12:00–14:00?...
+2025-09-03 09:37:23,054 - __main__ - DEBUG - Executing tool call: read_schedule with args: ['start_iso', 'end_iso', 'timezone_name']
+2025-09-03 09:37:28,468 - __main__ - DEBUG - Message processed successfully
+2025-09-03 09:37:28,470 - __main__ - DEBUG - Processing message in thread thread_IxORBrmt5Ipu5vfVW2d4i0Dp: Book a 30-minute catch-up with alex@contoso.com next Thursday at 12:30, title 'Design sync'....
+2025-09-03 09:37:31,037 - __main__ - DEBUG - Executing tool call: create_meeting with args: ['subject', 'start_iso', 'end_iso', 'attendees', 'timezone_name']
+2025-09-03 09:37:36,893 - __main__ - DEBUG - Message processed successfully
+2025-09-03 10:56:39,428 - __main__ - ERROR - Failed to initialize function tools: BaseFunctionTool.__init__() got an unexpected keyword argument 'extra_functions'
+2025-09-03 10:56:39,429 - __main__ - ERROR - Main execution failed: BaseFunctionTool.__init__() got an unexpected keyword argument 'extra_functions'
+2025-09-03 10:58:14,091 - __main__ - DEBUG - Function tools initialized successfully
+2025-09-03 10:58:14,096 - __main__ - DEBUG - Azure AI Project Client initialized successfully
+2025-09-03 10:58:20,700 - __main__ - DEBUG - Agent 'CalendarAgent' created successfully with ID: asst_gHtCYNybaqMKBUnBvgFG1PXV
+2025-09-03 10:58:21,222 - __main__ - DEBUG - Conversation thread created with ID: thread_67kPSJP6TCv93V0H4pChP6JQ
+2025-09-03 10:58:21,223 - __main__ - DEBUG - Processing message in thread thread_67kPSJP6TCv93V0H4pChP6JQ: What does my schedule look like next week?...
+2025-09-03 10:58:24,380 - __main__ - DEBUG - Executing tool call: read_schedule with args: ['start_iso', 'end_iso', 'timezone_name']
+2025-09-03 11:13:30,743 - __main__ - ERROR - Error processing message: ASSISTANT
+2025-09-03 11:13:30,745 - __main__ - DEBUG - Processing message in thread thread_67kPSJP6TCv93V0H4pChP6JQ: Am I free next Thursday 12:00–14:00?...
+2025-09-03 11:13:33,521 - __main__ - DEBUG - Executing tool call: read_schedule with args: ['start_iso', 'end_iso', 'timezone_name']
+2025-09-03 11:15:31,632 - __main__ - DEBUG - Function tools initialized successfully
+2025-09-03 11:15:31,641 - __main__ - DEBUG - Azure AI Project Client initialized successfully
+2025-09-03 11:15:35,446 - __main__ - DEBUG - Agent 'CalendarAgent' created successfully with ID: asst_tztQda9cXlhQXrxEc5dIfpVb
+2025-09-03 11:15:35,950 - __main__ - DEBUG - Conversation thread created with ID: thread_McxHMa7qj65Lr4UYWb3JfKl0
+2025-09-03 11:15:35,951 - __main__ - DEBUG - Processing message in thread thread_McxHMa7qj65Lr4UYWb3JfKl0: What does my schedule look like next week?...
+2025-09-03 11:15:38,816 - __main__ - DEBUG - Executing tool call: read_schedule with args: ['start_iso', 'end_iso', 'timezone_name']
+2025-09-03 11:15:41,116 - __main__ - ERROR - Error processing message: ASSISTANT
+2025-09-03 11:15:41,117 - __main__ - DEBUG - Processing message in thread thread_McxHMa7qj65Lr4UYWb3JfKl0: Am I free next Thursday 12:00–14:00?...
+2025-09-03 11:15:43,837 - __main__ - DEBUG - Executing tool call: read_schedule with args: ['start_iso', 'end_iso', 'timezone_name']
+2025-09-03 11:15:46,291 - __main__ - ERROR - Error processing message: ASSISTANT
+2025-09-03 11:15:46,292 - __main__ - DEBUG - Processing message in thread thread_McxHMa7qj65Lr4UYWb3JfKl0: Book a 30-minute catch-up with alex@contoso.com next Thursday at 12:30, title 'Design sync'....
+2025-09-03 11:15:50,592 - __main__ - DEBUG - Executing tool call: create_meeting with args: ['subject', 'start_iso', 'end_iso', 'attendees', 'timezone_name']
+2025-09-03 11:15:52,784 - __main__ - ERROR - Error processing message: ASSISTANT
+2025-09-03 11:49:54,294 - __main__ - DEBUG - Function tools initialized successfully
+2025-09-03 11:49:54,303 - __main__ - DEBUG - Azure AI Project Client initialized successfully
+2025-09-03 11:49:59,565 - __main__ - DEBUG - Agent 'CalendarAgent' created successfully with ID: asst_oM4ro7UG6wfqBjPhSfLBygMJ
+2025-09-03 11:50:00,132 - __main__ - DEBUG - Conversation thread created with ID: thread_wrxYWCrzVuYoWesLFssrGhtJ
+2025-09-03 11:50:00,133 - __main__ - DEBUG - Processing message in thread thread_wrxYWCrzVuYoWesLFssrGhtJ: What does my schedule look like next week?...
+2025-09-03 11:50:03,140 - __main__ - DEBUG - Executing tool call: read_schedule with args: ['start_iso', 'end_iso', 'timezone_name']
+2025-09-03 11:50:07,400 - __main__ - ERROR - Error processing message: ASSISTANT
+2025-09-03 11:50:07,401 - __main__ - DEBUG - Processing message in thread thread_wrxYWCrzVuYoWesLFssrGhtJ: Am I free next Thursday 12:00–14:00?...
+2025-09-03 11:50:10,063 - __main__ - DEBUG - Executing tool call: read_schedule with args: ['start_iso', 'end_iso', 'timezone_name']
+2025-09-03 11:50:14,088 - __main__ - ERROR - Error processing message: ASSISTANT
+2025-09-03 11:50:14,089 - __main__ - DEBUG - Processing message in thread thread_wrxYWCrzVuYoWesLFssrGhtJ: Book a 30-minute catch-up with alex@contoso.com next Thursday at 12:30, title 'Design sync'....
+2025-09-03 11:50:18,255 - __main__ - DEBUG - Executing tool call: create_meeting with args: ['subject', 'start_iso', 'end_iso', 'timezone_name', 'attendees', 'is_online_meeting']
+2025-09-03 11:50:22,145 - __main__ - ERROR - Error processing message: ASSISTANT
+2025-09-03 12:07:13,937 - __main__ - DEBUG - Function tools initialized successfully
+2025-09-03 12:07:13,943 - __main__ - DEBUG - Azure AI Project Client initialized successfully
+2025-09-03 12:07:20,642 - __main__ - DEBUG - Agent 'CalendarAgent' created successfully with ID: asst_am8FsAfS9GHzWowOpktWmbyx
+2025-09-03 12:07:21,128 - __main__ - DEBUG - Conversation thread created with ID: thread_KEfpjDlhW76cPOjgz8l92SG9
+2025-09-03 12:07:21,129 - __main__ - DEBUG - Processing message in thread thread_KEfpjDlhW76cPOjgz8l92SG9: What does my schedule look like next week?...
+2025-09-03 12:07:24,408 - __main__ - DEBUG - Executing tool call: read_schedule with args: ['start_iso', 'end_iso', 'timezone_name']
+2025-09-03 12:07:33,724 - __main__ - ERROR - Error processing message: ASSISTANT
+2025-09-03 12:07:33,725 - __main__ - DEBUG - Processing message in thread thread_KEfpjDlhW76cPOjgz8l92SG9: Am I free next Thursday 12:00–14:00?...
+2025-09-03 12:07:36,487 - __main__ - DEBUG - Executing tool call: read_schedule with args: ['start_iso', 'end_iso', 'timezone_name']
+2025-09-03 12:07:41,607 - __main__ - ERROR - Error processing message: ASSISTANT
+2025-09-03 12:07:41,609 - __main__ - DEBUG - Processing message in thread thread_KEfpjDlhW76cPOjgz8l92SG9: Book a 30-minute catch-up with alex@contoso.com next Thursday at 12:30, title 'Design sync'....
+2025-09-03 12:07:44,188 - __main__ - DEBUG - Executing tool call: create_meeting with args: ['subject', 'start_iso', 'end_iso', 'attendees', 'timezone_name']
+2025-09-03 12:07:49,490 - __main__ - ERROR - Error processing message: ASSISTANT
+2025-09-03 13:47:01,696 - __main__ - DEBUG - Function tools initialized successfully
+2025-09-03 13:47:01,708 - __main__ - DEBUG - Azure AI Project Client initialized successfully
+2025-09-03 13:47:11,291 - __main__ - DEBUG - Agent 'CalendarAgent' created successfully with ID: asst_NAbdb11dZLm1VfqDwzETurJF
+2025-09-03 13:47:11,739 - __main__ - DEBUG - Conversation thread created with ID: thread_ZRkaBsAel2CLBACPYBK71h6h
+2025-09-03 13:47:11,742 - __main__ - DEBUG - Processing message in thread thread_ZRkaBsAel2CLBACPYBK71h6h: What does my schedule look like next week?...
+2025-09-03 13:47:14,789 - __main__ - DEBUG - Executing tool call: read_schedule with args: ['start_iso', 'end_iso', 'timezone_name']
+2025-09-03 13:47:19,370 - __main__ - ERROR - Error processing message: ASSISTANT
+2025-09-03 13:47:19,372 - __main__ - DEBUG - Processing message in thread thread_ZRkaBsAel2CLBACPYBK71h6h: Am I free next Thursday 12:00–14:00?...
+2025-09-03 13:47:23,674 - __main__ - DEBUG - Executing tool call: read_schedule with args: ['start_iso', 'end_iso', 'timezone_name']
+2025-09-03 13:47:29,404 - __main__ - ERROR - Error processing message: ASSISTANT
+2025-09-03 13:47:29,405 - __main__ - DEBUG - Processing message in thread thread_ZRkaBsAel2CLBACPYBK71h6h: Book a 30-minute catch-up with alex@contoso.com next Thursday at 12:30, title 'Design sync'....
+2025-09-03 13:47:32,082 - __main__ - DEBUG - Executing tool call: create_meeting with args: ['subject', 'start_iso', 'end_iso', 'attendees', 'timezone_name']
+2025-09-03 13:47:36,470 - __main__ - ERROR - Error processing message: ASSISTANT
+2025-09-03 14:15:17,936 - __main__ - DEBUG - Function tools initialized successfully
+2025-09-03 14:15:17,940 - __main__ - DEBUG - Azure AI Project Client initialized successfully
+2025-09-03 14:15:22,108 - __main__ - DEBUG - Agent 'CalendarAgent' created successfully with ID: asst_3bcBqeK4evaprituYi26Onhy
+2025-09-03 14:15:22,536 - __main__ - DEBUG - Conversation thread created with ID: thread_JRWmeHYPCBfH5rt0ag008ly7
+2025-09-03 14:15:22,538 - __main__ - DEBUG - Processing message in thread thread_JRWmeHYPCBfH5rt0ag008ly7: What does my schedule look like next week?...
+2025-09-03 14:15:25,528 - __main__ - DEBUG - Executing tool call: read_schedule with args: ['start_iso', 'end_iso', 'timezone_name']
+2025-09-03 14:15:32,137 - __main__ - ERROR - Error processing message: ASSISTANT
+2025-09-03 14:15:32,139 - __main__ - DEBUG - Processing message in thread thread_JRWmeHYPCBfH5rt0ag008ly7: Am I free next Thursday 12:00–14:00?...
+2025-09-03 14:15:34,944 - __main__ - ERROR - Error processing message: ASSISTANT
+2025-09-03 14:15:34,945 - __main__ - DEBUG - Processing message in thread thread_JRWmeHYPCBfH5rt0ag008ly7: Book a 30-minute catch-up with alex@contoso.com next Thursday at 12:30, title 'Design sync'....
+2025-09-03 14:15:39,306 - __main__ - DEBUG - Executing tool call: create_meeting with args: ['subject', 'start_iso', 'end_iso', 'attendees', 'timezone_name']
+2025-09-03 14:15:44,245 - __main__ - ERROR - Error processing message: ASSISTANT
+2025-09-03 14:21:22,694 - __main__ - DEBUG - Function tools initialized successfully
+2025-09-03 14:21:22,698 - __main__ - DEBUG - Azure AI Project Client initialized successfully
+2025-09-03 14:21:26,647 - __main__ - DEBUG - Agent 'CalendarAgent' created successfully with ID: asst_MkmnksWTgQNUhxiFVAjbuW7n
+2025-09-03 14:21:27,075 - __main__ - DEBUG - Conversation thread created with ID: thread_NmkJZyPqgoeHKdBhc0x5bh3L
+2025-09-03 14:21:27,076 - __main__ - DEBUG - Processing message in thread thread_NmkJZyPqgoeHKdBhc0x5bh3L: What does my schedule look like next week?...
+2025-09-03 14:21:31,610 - __main__ - DEBUG - Executing tool call: read_schedule with args: ['start_iso', 'end_iso', 'timezone_name']
+2025-09-03 14:21:36,070 - __main__ - ERROR - Error processing message: ASSISTANT
+2025-09-03 14:21:36,071 - __main__ - DEBUG - Processing message in thread thread_NmkJZyPqgoeHKdBhc0x5bh3L: Am I free next Thursday 12:00–14:00?...
+2025-09-03 14:21:38,652 - __main__ - DEBUG - Executing tool call: read_schedule with args: ['start_iso', 'end_iso', 'timezone_name']
+2025-09-03 14:21:41,747 - __main__ - ERROR - Error processing message: ASSISTANT
+2025-09-03 14:21:41,749 - __main__ - DEBUG - Processing message in thread thread_NmkJZyPqgoeHKdBhc0x5bh3L: Book a 30-minute catch-up with alex@contoso.com next Thursday at 12:30, title 'Design sync'....
+2025-09-03 14:21:44,486 - __main__ - DEBUG - Executing tool call: create_meeting with args: ['subject', 'start_iso', 'end_iso', 'attendees', 'timezone_name']
+2025-09-03 14:21:47,566 - __main__ - ERROR - Error processing message: ASSISTANT
+2025-09-03 15:33:38,410 - __main__ - DEBUG - Function tools initialized successfully
+2025-09-03 15:33:38,415 - __main__ - DEBUG - Azure AI Project Client initialized successfully
+2025-09-03 15:33:44,707 - __main__ - DEBUG - Agent 'CalendarAgent' created successfully with ID: asst_L7SmyA64Q3ISfxeebh6IfQzg
+2025-09-03 15:33:45,132 - __main__ - DEBUG - Conversation thread created with ID: thread_tvX42PL6MzIkOsynD3uX4cCF
+2025-09-03 15:33:45,133 - __main__ - DEBUG - Processing message in thread thread_tvX42PL6MzIkOsynD3uX4cCF: What does my schedule look like next week?...
+2025-09-03 15:33:48,132 - __main__ - DEBUG - Executing tool call: read_schedule with args: ['start_iso', 'end_iso', 'timezone_name']
+2025-09-03 15:33:54,868 - __main__ - ERROR - Error processing message: ASSISTANT
+2025-09-03 15:33:54,869 - __main__ - DEBUG - Processing message in thread thread_tvX42PL6MzIkOsynD3uX4cCF: Am I free next Thursday 12:00–14:00?...
+2025-09-03 15:33:58,056 - __main__ - DEBUG - Executing tool call: read_schedule with args: ['start_iso', 'end_iso', 'timezone_name']
+2025-09-03 15:34:01,519 - __main__ - ERROR - Error processing message: ASSISTANT
+2025-09-03 15:34:01,521 - __main__ - DEBUG - Processing message in thread thread_tvX42PL6MzIkOsynD3uX4cCF: Book a 30-minute catch-up with alex@contoso.com next Thursday at 12:30, title 'Design sync'....
+2025-09-03 15:34:05,900 - __main__ - DEBUG - Executing tool call: create_meeting with args: ['subject', 'start_iso', 'end_iso', 'timezone_name', 'attendees']
+2025-09-03 15:34:09,074 - __main__ - ERROR - Error processing message: ASSISTANT
+2025-09-03 16:13:31,613 - __main__ - DEBUG - Function tools initialized successfully
+2025-09-03 16:13:31,621 - __main__ - DEBUG - Azure AI Project Client initialized successfully
+2025-09-03 16:13:36,366 - __main__ - DEBUG - Agent 'CalendarAgent' created successfully with ID: asst_rPKDJWJ98qslQEr1aTtBOd9A
+2025-09-03 16:13:36,842 - __main__ - DEBUG - Conversation thread created with ID: thread_ipXsMStSLeZn024HxUsTV1nv
+2025-09-03 16:13:36,843 - __main__ - DEBUG - Processing message in thread thread_ipXsMStSLeZn024HxUsTV1nv: What does my schedule look like next week?...
+2025-09-03 16:13:42,163 - __main__ - DEBUG - Executing tool call: read_schedule with args: ['start_iso', 'end_iso', 'timezone_name']
+2025-09-03 16:13:48,717 - __main__ - ERROR - Error processing message: ASSISTANT
+2025-09-03 16:13:48,718 - __main__ - DEBUG - Processing message in thread thread_ipXsMStSLeZn024HxUsTV1nv: Am I free next Thursday 12:00–14:00?...
+2025-09-03 16:13:53,044 - __main__ - DEBUG - Executing tool call: read_schedule with args: ['start_iso', 'end_iso', 'timezone_name']
+2025-09-03 16:13:56,450 - __main__ - ERROR - Error processing message: ASSISTANT
+2025-09-03 16:13:56,451 - __main__ - DEBUG - Processing message in thread thread_ipXsMStSLeZn024HxUsTV1nv: Book a 30-minute catch-up with alex@contoso.com next Thursday at 12:30, title 'Design sync'....
+2025-09-03 16:13:59,726 - __main__ - DEBUG - Executing tool call: create_meeting with args: ['subject', 'start_iso', 'end_iso', 'timezone_name', 'attendees']
+2025-09-03 16:14:04,718 - __main__ - ERROR - Error processing message: ASSISTANT

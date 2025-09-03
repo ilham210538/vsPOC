@@ -74,3 +74,9 @@ Content: {"error":"invalid_request","error_description":"AADSTS50027: JWT token 
 2025-09-03 23:34:58,864 - improved_tools - DEBUG - Retrieved 7 events
 2025-09-03 23:36:54,535 - improved_tools - DEBUG - Reading schedule for user: default
 2025-09-03 23:36:56,818 - improved_tools - DEBUG - Retrieved 7 events
+2025-09-03 23:47:13,153 - improved_tools - DEBUG - Reading schedule for user: default
+2025-09-03 23:47:15,104 - improved_tools - DEBUG - Retrieved 7 events
+2025-09-03 23:51:55,625 - improved_tools - DEBUG - Reading schedule for user: default
+2025-09-03 23:51:57,684 - improved_tools - DEBUG - Retrieved 7 events
+2025-09-03 23:52:16,819 - improved_tools - DEBUG - Reading schedule for user: default
+2025-09-03 23:52:17,318 - improved_tools - DEBUG - Retrieved 0 events

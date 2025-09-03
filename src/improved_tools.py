@@ -227,9 +227,15 @@ async def _read_schedule_async(
             if invalid:
                 raise ValueError(f"Invalid select fields: {invalid}")
             url += f"&$select={','.join(select)}"
+        else:
+            # Default to minimal fields to reduce payload size
+            url += "&$select=id,subject,start,end,location"
 
         if top:
             url += f"&$top={int(top)}"
+        else:
+            # Limit to 10 events by default to reduce load
+            url += "&$top=10"
 
         # Print the exact call being made
         print(f"API Call: GET {url}")
@@ -243,22 +249,33 @@ async def _read_schedule_async(
             "Prefer": f'outlook.timezone="{tz}"',
         }
 
-        async with httpx.AsyncClient() as http_client:
+        async with httpx.AsyncClient(timeout=30.0) as http_client:  # Add timeout
             resp = await http_client.get(url, headers=headers)
+            
+            # Print status code for debugging
+            print(f"Response Status: {resp.status_code}")
+            
             if resp.status_code == 200:
                 data = resp.json()
                 logger.debug(f"Retrieved {len(data.get('value', []))} events")
                 print(f"Events retrieved: {len(data.get('value', []))}")
                 return data
 
+            # Enhanced error handling with specific Graph API codes
             logger.error(f"HTTP {resp.status_code}: {resp.text}")
             print(f"HTTP Error {resp.status_code}: {resp.text}")
+            
+            if resp.status_code == 429:  # Too Many Requests
+                retry_after = resp.headers.get('Retry-After', 'unknown')
+                return {"error": "rate_limit_exceeded", "message": f"Graph API rate limit exceeded. Retry after: {retry_after} seconds"}
             if resp.status_code == 403:
                 return {"error": "permission_denied", "message": "App lacks required Application permissions."}
             if resp.status_code == 401:
                 return {"error": "authentication_failed", "message": "Authentication failed. Check credentials."}
             if resp.status_code == 404:
                 return {"error": "user_not_found", "message": f"User {user} not found."}
+            if resp.status_code == 503:  # Service Unavailable
+                return {"error": "service_unavailable", "message": "Graph API service temporarily unavailable"}
             return {"error": "graph_api_error", "message": f"Graph API error {resp.status_code}: {resp.text}"}
 
     except Exception as e:

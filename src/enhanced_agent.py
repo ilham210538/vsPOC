@@ -189,11 +189,24 @@ class CalendarAgent:
                 error_details = getattr(run, 'last_error', None) or getattr(run, 'error', None)
                 if error_details:
                     logger.error(f"Error details: {error_details}")
-                error_msg = f"Run failed: {error_details}" if error_details else "Run failed - possibly due to rate limiting or thread lock"
+                    print(f"DEBUG - Error details: {error_details}")
+                
+                # Check if it's a specific error type
+                error_msg = "Run failed - possibly due to rate limiting or thread lock"
+                if error_details:
+                    error_str = str(error_details).lower()
+                    if "rate" in error_str or "limit" in error_str:
+                        error_msg = f"Rate limit hit: {error_details}"
+                    elif "quota" in error_str or "usage" in error_str:
+                        error_msg = f"Quota/Usage limit hit: {error_details}"
+                    else:
+                        error_msg = f"Run failed: {error_details}"
+                
                 return {
                     "status": "error",
                     "message": error_msg,
-                    "run_status": run.status
+                    "run_status": run.status,
+                    "error_details": error_details
                 }
             
             # Get final response
@@ -246,24 +259,38 @@ class CalendarAgent:
             logger.error(f"Error processing message: {e}")
             error_str = str(e).lower()
             
+            # Print full error for debugging
+            print(f"DEBUG - Full error: {e}")
+            print(f"DEBUG - Error type: {type(e).__name__}")
+            
             # Check for specific rate limit errors
             if "rate limit" in error_str or "too many requests" in error_str or "throttle" in error_str:
                 return {
                     "status": "error",
                     "message": "Rate limit exceeded. Please wait and try again.",
-                    "error_details": str(e)
+                    "error_details": str(e),
+                    "error_type": "rate_limit"
                 }
-            elif "quota" in error_str:
+            elif "quota" in error_str or "usage" in error_str:
                 return {
                     "status": "error", 
                     "message": "Service quota exceeded. Please check your Azure AI usage.",
-                    "error_details": str(e)
+                    "error_details": str(e),
+                    "error_type": "quota_exceeded"
+                }
+            elif "graph" in error_str or "microsoft.graph" in error_str:
+                return {
+                    "status": "error",
+                    "message": "Microsoft Graph API error occurred.",
+                    "error_details": str(e),
+                    "error_type": "graph_api_error"
                 }
             else:
                 return {
                     "status": "error",
                     "message": "An unexpected error occurred while processing your request.",
-                    "error_details": str(e)
+                    "error_details": str(e),
+                    "error_type": "unknown"
                 }
             
     def _handle_tool_calls(self, tool_calls) -> List[Dict[str, Any]]:
@@ -363,12 +390,12 @@ def main():
         with agent.project:
             print("Creating agent instance...")
             agent_id = agent.create_agent()
-            print("Agent created successfully.")
+            print(f"Agent created successfully. Agent ID: {agent_id}")
             
             # Create conversation thread
             print("Creating conversation thread...")
             thread_id = agent.create_conversation_thread()
-            print("Thread created successfully.")
+            print(f"Thread created successfully. Thread ID: {thread_id}")
             
             # Example interactions (removed create_meeting test)
             test_messages = [
@@ -391,7 +418,12 @@ def main():
                     success_count += 1
                 else:
                     print("❌ Error")
-                    print(f"Error: {response['message']}\n")
+                    print(f"Error: {response['message']}")
+                    if 'error_details' in response:
+                        print(f"Details: {response['error_details']}")
+                    if 'error_type' in response:
+                        print(f"Type: {response['error_type']}")
+                    print()
                 
                 # Add delay between requests AND ensure thread is ready
                 if i < len(test_messages):

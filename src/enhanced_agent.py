@@ -12,6 +12,7 @@ from azure.identity import DefaultAzureCredential
 from azure.ai.projects import AIProjectClient
 from azure.ai.agents.models import FunctionTool
 from improved_tools import read_schedule, create_meeting
+from datetime_tool import get_current_datetime
 
 # Configure logging - detailed logs to file, minimal to console
 file_handler = logging.FileHandler('agent_operations.log')
@@ -50,7 +51,7 @@ class CalendarAgent:
     def _initialize_tools(self):
         """Initialize function tools."""
         try:
-            self.tools = FunctionTool(functions={read_schedule, create_meeting})
+            self.tools = FunctionTool(functions={read_schedule, create_meeting, get_current_datetime})
             logger.debug("Function tools initialized successfully")
         except Exception as e:
             logger.error(f"Failed to initialize function tools: {e}")
@@ -80,25 +81,30 @@ class CalendarAgent:
             Agent ID
         """
         try:
-            self.agent = self.project.agents.create_agent(
+            agent_obj = self.project.agents.create_agent(
                 model=os.environ["MODEL_DEPLOYMENT_NAME"],
                 name=name,
                 instructions=(
                     "You are a professional calendar assistant that helps users manage their schedules. "
-                    f"The current date is September 3, 2025. When users ask about 'next week' or relative dates, "
-                    f"calculate dates based on September 3, 2025 being today. "
-                    "For availability questions, call read_schedule with appropriate time windows. "
-                    "When booking meetings, call create_meeting with the requested details. "
+                    "ALWAYS call get_current_datetime() first to get the current date and time before answering any questions. "
+                    "Use the returned date information for all relative date calculations (today, tomorrow, next week, etc.). "
+                    "IMPORTANT: For schedule queries, you MUST format each event EXACTLY as follows (with no changes or additions):"
+                    "\n1. **<Event Title>**"
+                    "\n   - **Time:** <Start Time> to <End Time>"
+                    "\n   - **Location:** <Location>"
+                    "\n   - **Organiser:** <Organiser Name> (<Organiser Email>)"
+                    "\n"
+                    "The organizer information is in the response under event.organizer.emailAddress.name and event.organizer.emailAddress.address."
+                    "\n"
+                    "IMPORTANT: When booking meetings, you MUST summarize all meeting details to the user in a clear, formatted block and ask for explicit confirmation. You must wait for the user to type 'yes' to proceed with booking or 'no' to cancel. Do not call create_meeting until receiving a 'yes'."
                     "Always provide clear, concise responses with timezone information. "
                     "Handle errors gracefully and inform users of any issues. "
-                    "When dealing with relative dates like 'next week' or 'tomorrow', "
-                    "calculate the appropriate ISO datetime strings for 2025 before making tool calls."
                 ),
                 tools=self.tools.definitions,
             )
-                
-            logger.debug(f"Agent '{name}' created successfully with ID: {self.agent.id}")
-            return self.agent.id
+            self.agent = agent_obj
+            logger.debug(f"Agent '{name}' created successfully with ID: {agent_obj.id}")
+            return agent_obj.id
             
         except Exception as e:
             logger.error(f"Failed to create agent: {e}")
@@ -259,38 +265,24 @@ class CalendarAgent:
             logger.error(f"Error processing message: {e}")
             error_str = str(e).lower()
             
-            # Print full error for debugging
-            print(f"DEBUG - Full error: {e}")
-            print(f"DEBUG - Error type: {type(e).__name__}")
-            
             # Check for specific rate limit errors
             if "rate limit" in error_str or "too many requests" in error_str or "throttle" in error_str:
                 return {
                     "status": "error",
                     "message": "Rate limit exceeded. Please wait and try again.",
-                    "error_details": str(e),
-                    "error_type": "rate_limit"
+                    "error_details": str(e)
                 }
-            elif "quota" in error_str or "usage" in error_str:
+            elif "quota" in error_str:
                 return {
                     "status": "error", 
                     "message": "Service quota exceeded. Please check your Azure AI usage.",
-                    "error_details": str(e),
-                    "error_type": "quota_exceeded"
-                }
-            elif "graph" in error_str or "microsoft.graph" in error_str:
-                return {
-                    "status": "error",
-                    "message": "Microsoft Graph API error occurred.",
-                    "error_details": str(e),
-                    "error_type": "graph_api_error"
+                    "error_details": str(e)
                 }
             else:
                 return {
                     "status": "error",
                     "message": "An unexpected error occurred while processing your request.",
-                    "error_details": str(e),
-                    "error_type": "unknown"
+                    "error_details": str(e)
                 }
             
     def _handle_tool_calls(self, tool_calls) -> List[Dict[str, Any]]:
@@ -321,6 +313,13 @@ class CalendarAgent:
                     
                 elif fn == "create_meeting":
                     result = create_meeting(**args)
+                    outputs.append({
+                        "tool_call_id": call.id, 
+                        "output": json.dumps(result)
+                    })
+                    
+                elif fn == "get_current_datetime":
+                    result = get_current_datetime(**args)
                     outputs.append({
                         "tool_call_id": call.id, 
                         "output": json.dumps(result)
@@ -367,14 +366,19 @@ class CalendarAgent:
         """
         try:
             if self.agent and hasattr(self.agent, 'id'):
-                self.project.agents.delete_agent(self.agent.id)
-                logger.debug(f"Agent {self.agent.id} deleted successfully")
-                return True
+                agent_id = self.agent.id
+                try:
+                    self.project.agents.delete_agent(agent_id)
+                    logger.debug(f"Agent {agent_id} deleted successfully")
+                    return True
+                except Exception as api_error:
+                    logger.error(f"Azure API error deleting agent {agent_id}: {api_error}")
+                    return False
             else:
-                logger.warning("No agent to delete")
+                logger.warning("No agent to delete (self.agent is None or missing id)")
                 return False
         except Exception as e:
-            logger.error(f"Error deleting agent: {e}")
+            logger.error(f"General error deleting agent: {e}")
             return False
 
 def main():
@@ -418,12 +422,7 @@ def main():
                     success_count += 1
                 else:
                     print("❌ Error")
-                    print(f"Error: {response['message']}")
-                    if 'error_details' in response:
-                        print(f"Details: {response['error_details']}")
-                    if 'error_type' in response:
-                        print(f"Type: {response['error_type']}")
-                    print()
+                    print(f"Error: {response['message']}\n")
                 
                 # Add delay between requests AND ensure thread is ready
                 if i < len(test_messages):

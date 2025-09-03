@@ -1,5 +1,39 @@
 # Azure AI Foundry Calendar Agent - Complete Setup Guide
 
+## 🎯 Overview
+This guide provides step-by-step instructions to implement an AI-powered calendar assistant that integrates with Microsoft 365 calendars using Azure AI Foundry and Microsoft Graph API.
+
+## 🛠️ What We're Building
+- **AI Calendar Assistant**: Intelligent agent that can read schedules, check availability, and create meetings
+- **Microsoft Graph Integration**: Direct access to user calendars and mailbox data
+- **Natural Language Processing**: Users can interact using plain English queries
+- **Interactive Terminal Chat**: Real-time conversation interface with full API visibility
+- **Production-Ready**: Secure, scalable, and enterprise-grade solution
+
+## 🏗️ Architecture Overview
+
+### Current Implementation (Local Development)
+```
+User Terminal Chat ←→ Enhanced Agent ←→ Microsoft Graph API
+                           ↓
+                    Azure AI Foundry (GPT-4o)
+                           ↓
+                    Calendar Tools (Python Functions)
+```
+
+### Future Production Deployment Options
+```
+Option 1: Azure App Service API
+User Interface ←→ App Service ←→ Graph API
+                     ↓
+              Azure AI Foundry
+
+Option 2: Azure Functions
+User Interface ←→ Azure Functions ←→ Graph API
+                     ↓
+              Azure AI Foundry
+``` Foundry Calendar Agent - Complete Setup Guide
+
 ## � Overview
 This guide provides step-by-step instructions to implement an AI-powered calendar assistant that integrates with Microsoft 365 calendars using Azure AI Foundry and Microsoft Graph API.
 
@@ -134,7 +168,7 @@ pip install -r req.txt
 
 ---
 
-## Phase 4: Agent Implementation
+## Phase 4: Agent Implementation & Interactive Chat
 
 ### Step 10: Implement Core Components
 
@@ -142,6 +176,7 @@ pip install -r req.txt
 The tools handle Microsoft Graph API interactions:
 - **read_schedule()**: Fetches calendar events for specified time ranges
 - **create_meeting()**: Creates new calendar events with attendees
+- **get_current_datetime()**: Provides real-time date/time in correct timezone
 - **Authentication**: Uses app-only authentication with client credentials
 
 #### B. AI Agent (`enhanced_agent.py`)
@@ -149,31 +184,97 @@ The main agent orchestrates AI interactions:
 - **Agent Creation**: Initializes AI assistant with calendar capabilities
 - **Message Processing**: Handles user queries and tool calls
 - **Response Management**: Returns formatted responses to users
+- **Human-in-the-Loop**: Requires confirmation before creating meetings
 
-### Step 11: Test Basic Functionality
-Run initial test:
+#### C. Interactive Chat Interface (`interactive_chat.py`)
+Real-time terminal chat interface:
+- **Live Conversation**: Chat with your AI agent like a chatbot
+- **Full API Visibility**: See all Graph API calls, responses, and token validation
+- **Professional UI**: Clean formatting with emojis and separators
+- **Sample Queries**: Pre-written examples for easy testing
+
+### Step 11: Test Interactive Chat
+Run the interactive chat interface:
 ```bash
-python src/enhanced_agent.py
+python src/interactive_chat.py
 ```
 
-Expected output:
+Expected interface:
 ```
-Azure AI Foundry Calendar Agent - Initializing...
-Initializing calendar agent...
-Creating agent instance...
-Agent created successfully. Agent ID: asst_xxxxx
-Creating conversation thread...
-Thread created successfully. Thread ID: thread_xxxxx
+=================================================================
+🗓️   CALENDAR AGENT CHAT INTERFACE
+=================================================================
+📅 Today: Thursday, September 04, 2025
 
-Running 2 test interactions...
+💡 SAMPLE QUERIES:
+─────────────────────────────────────────────
+1️⃣   What does my schedule look like next week?
+2️⃣   Am I free next Thursday 12:00–14:00?
+3️⃣   Book a meeting with john@company.com tomorrow at 3pm
+     for 1 hour, title 'Project Discussion'
 
-[1/2] User: What does my schedule look like next week?
-Processing request... ✅ Success
-Agent: [Calendar response with events]
+ℹ️   Commands: 'quit', 'exit', 'bye' to end session
+ℹ️   All API calls will be shown with full visibility
+=================================================================
 
-[2/2] User: Am I free tomorrow at 2pm?
-Processing request... ✅ Success
-Agent: [Availability response]
+🚀 Azure AI Foundry Calendar Agent - Initializing...
+⚙️  Initializing calendar agent...
+🤖 Creating agent instance...
+✅ Agent created successfully. Agent ID: asst_xxxxx
+🧵 Creating conversation thread...
+✅ Thread created successfully. Thread ID: thread_xxxxx
+
+🎉 Ready! You can start chatting now.
+─────────────────────────────────────────────────────────────────
+
+👤 User: what is on my schedule today?
+🔄 Processing request... 📅 API Call: get_current_datetime()
+📅 Current Date/Time: September 04, 2025 at 18:30:15 SGT | UTC: September 04, 2025 at 10:30:15 UTC
+API Call: GET https://graph.microsoft.com/v1.0/users/user@domain.com/calendarView?startDateTime=2025-09-04T00:00:00+08:00&endDateTime=2025-09-04T23:59:59+08:00&$select=id,subject,start,end,location&$top=10
+Timezone: Singapore Standard Time
+✅ Response Status: 200 | Events retrieved: 3
+✅ Success
+🤖 Agent: Here is your schedule for today, September 4, 2025:
+
+1. **Morning Standup**
+   - **Time**: 9:00 AM - 9:30 AM (Singapore Standard Time)
+   - **Location**: Microsoft Teams Meeting
+
+2. **Client Presentation**  
+   - **Time**: 2:00 PM - 3:00 PM (Singapore Standard Time)
+   - **Location**: Conference Room A
+
+3. **Project Review**
+   - **Time**: 4:00 PM - 5:00 PM (Singapore Standard Time)
+   - **Location**: Microsoft Teams Meeting
+
+─────────────────────────────────────────────────────────────────
+
+👤 User: quit
+```
+
+### Step 12: Test Meeting Creation (Human-in-the-Loop)
+The agent implements safety controls for meeting creation:
+
+```
+👤 User: book a meeting with sarah@company.com tomorrow at 2pm for 1 hour, title 'Project Discussion'
+🔄 Processing request... ✅ Success
+🤖 Agent: I'll create a meeting with these details:
+
+**Meeting Details:**
+- **Subject**: Project Discussion
+- **Date/Time**: September 5, 2025, 2:00 PM - 3:00 PM (Singapore Standard Time)
+- **Attendees**: sarah@company.com
+- **Location**: Microsoft Teams Meeting (online)
+
+Would you like me to create this meeting? Please type YES to confirm or NO to cancel.
+
+👤 User: YES
+🔄 Processing request... API Call: POST https://graph.microsoft.com/v1.0/users/user@domain.com/events
+Meeting Subject: Project Discussion
+Event created successfully: AAMkADI1NTM...
+✅ Success
+🤖 Agent: ✅ Meeting "Project Discussion" has been successfully created for tomorrow, September 5, 2025, from 2:00 PM to 3:00 PM. An invitation has been sent to sarah@company.com.
 ```
 
 ---
@@ -208,118 +309,303 @@ Built-in optimizations:
 
 ---
 
-## Phase 6: Client Integration Options
+## 🚀 Production Deployment Strategies
 
-### Option A: Direct Integration
+### Why Azure AI Foundry Portal Doesn't Work Directly
+
+**Current Issue**: The Azure AI Foundry web portal cannot access your local Python tools (`read_schedule`, `create_meeting`, `get_current_datetime`). The portal only has access to:
+- Built-in tools (web search, code interpreter)
+- Azure Functions (when properly configured)
+- Public API endpoints
+
+**Terminal vs Portal Behavior**:
+- **Terminal**: ✅ Runs complete Python application with all tools locally
+- **Portal**: ❌ Shows tool calls but cannot execute your custom Python functions
+
+### Solution: Deploy Tools as Services
+
+#### Option 1: Azure App Service (Recommended)
+Deploy your entire application as a REST API:
+
 ```python
-# Example integration code
-from src.enhanced_agent import CalendarAgent
-
-agent = CalendarAgent()
-agent_id = agent.create_agent()
-thread_id = agent.create_conversation_thread()
-
-response = agent.process_message(
-    thread_id, 
-    "Schedule a meeting with john@company.com tomorrow at 3pm"
-)
-print(response["message"])
-```
-
-### Option B: API Wrapper
-Create a simple web API using FastAPI or Flask:
-```python
+# Example: app_service_wrapper.py
 from flask import Flask, request, jsonify
 from src.enhanced_agent import CalendarAgent
 
 app = Flask(__name__)
-agent = CalendarAgent()
 
-@app.route("/calendar/query", methods=["POST"])
-def handle_calendar_query():
-    user_message = request.json["message"]
-    response = agent.process_message(thread_id, user_message)
+@app.route('/api/calendar/query', methods=['POST'])
+def calendar_query():
+    user_message = request.json['message']
+    # Process with your existing agent logic
     return jsonify(response)
+
+@app.route('/api/calendar/read_schedule', methods=['POST'])
+def api_read_schedule():
+    # Wrapper for your read_schedule function
+    return jsonify(read_schedule(**request.json))
+
+@app.route('/api/calendar/create_meeting', methods=['POST'])  
+def api_create_meeting():
+    # Wrapper for your create_meeting function
+    return jsonify(create_meeting(**request.json))
 ```
 
-### Option C: Teams Bot Integration
-Integrate with Microsoft Teams using Bot Framework.
+**Deployment Process**:
+1. Create Azure App Service
+2. Deploy your Python application
+3. Configure environment variables
+4. Update Azure AI Foundry agent to call your API endpoints
+
+#### Option 2: Azure Functions
+Deploy each tool as a separate serverless function:
+
+```python
+# Function: read-schedule
+import azure.functions as func
+from src.improved_tools import read_schedule
+
+def main(req: func.HttpRequest) -> func.HttpResponse:
+    params = req.get_json()
+    result = read_schedule(**params)
+    return func.HttpResponse(json.dumps(result))
+```
+
+**Benefits**:
+- ✅ Serverless scaling
+- ✅ Pay-per-execution
+- ✅ Integrated with Azure ecosystem
+- ✅ Easy monitoring and logging
+
+#### Option 3: Hybrid Approach (Current + Future)
+**Development**: Use local terminal chat for testing and development
+**Production**: Deploy to App Service or Functions for external access
+
+### Integration Architecture
+
+```
+User Application/Interface
+         ↓
+    Azure App Service API
+         ↓
+┌────────────────────────┐
+│  Your Python Tools     │
+│  ├── read_schedule     │
+│  ├── create_meeting    │  
+│  └── get_current_time  │
+└────────────────────────┘
+         ↓
+   Microsoft Graph API
+```
+
+### Azure AI Foundry Integration
+
+Once deployed as an API, configure Azure AI Foundry to use your endpoints:
+
+```json
+{
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "read_schedule",
+        "description": "Read calendar schedule",
+        "url": "https://your-app.azurewebsites.net/api/calendar/read_schedule"
+      }
+    }
+  ]
+}
+```
 
 ---
 
-## 🔧 Troubleshooting Guide
+## � Quick Start Checklist
 
-### Common Issues & Solutions
+### For Development/Demo (Ready Now)
+- [ ] Azure App Registration created with proper permissions
+- [ ] Azure AI Foundry project setup with GPT-4o deployment
+- [ ] Environment variables configured in `.env` file
+- [ ] Python dependencies installed (`pip install -r req.txt`)
+- [ ] Test enhanced_agent.py works
+- [ ] **Run interactive chat**: `python src/interactive_chat.py`
+- [ ] Test calendar queries and meeting creation
+- [ ] Prepare demo scenarios for client presentation
 
-#### 1. Authentication Errors
-```
-Error: Authentication failed. Check credentials.
-```
-**Solution**: Verify client secret is correct and hasn't expired
-
-#### 2. Permission Denied
-```
-Error: App lacks required Application permissions.
-```
-**Solution**: Ensure admin consent was granted for all Graph API permissions
-
-#### 3. Rate Limiting
-```
-Error: Graph API rate limit exceeded. Retry after: 60 seconds
-```
-**Solution**: Implement exponential backoff (already included in code)
-
-#### 4. Agent Creation Failures
-```
-Error: Failed to create agent
-```
-**Solution**: Check AI Foundry project endpoint and model deployment name
-
-### Testing Checklist
-- [ ] App registration permissions granted
-- [ ] Client secret is valid and copied correctly
-- [ ] AI Foundry project is accessible
-- [ ] Model deployment is active
-- [ ] Environment variables are set correctly
-- [ ] Target user email exists in tenant
-- [ ] Network connectivity to Azure services
+### For Production Deployment (Future)
+- [ ] Choose deployment strategy (App Service vs Functions)
+- [ ] Create Azure App Service or Function Apps
+- [ ] Deploy Python tools as REST API endpoints
+- [ ] Configure Azure AI Foundry to use deployed endpoints
+- [ ] Set up monitoring and logging
+- [ ] Implement user authentication (if needed)
+- [ ] Create web-based user interface
+- [ ] Conduct user acceptance testing
 
 ---
 
-## 📊 Success Metrics
+## 🎯 Success Metrics
 
+### Current Implementation
 After successful setup, you should achieve:
+- **Real-time chat interface**: Interactive conversation with AI agent
+- **Full API visibility**: See all Graph API calls and responses
 - **Instant calendar queries**: "What's on my schedule today?"
 - **Availability checks**: "Am I free next Tuesday at 3pm?"
-- **Meeting creation**: "Book a meeting with sarah@company.com tomorrow at 2pm"
+- **Safe meeting creation**: Human-in-the-loop confirmation process
 - **Natural language processing**: Users can ask in plain English
 - **Enterprise security**: App-level permissions, secure authentication
 
----
-
-## 🎯 Next Steps
-
-1. **Pilot Testing**: Start with a small group of users
-2. **Feature Expansion**: Add more calendar operations (delete, update)
-3. **UI Development**: Create user-friendly interface
-4. **Teams Integration**: Deploy as Microsoft Teams bot
-5. **Analytics**: Implement usage tracking and optimization
+### Production Targets
+- **Response time**: < 3 seconds for calendar queries
+- **Availability**: 99.9% uptime with Azure infrastructure
+- **Concurrency**: Support 100+ simultaneous users
+- **User adoption**: 80%+ of target users actively using the system
+- **Time savings**: 60%+ reduction in manual calendar management
 
 ---
 
-## 💡 Client Presentation Tips
+## 🚨 Important Notes
 
-### Demo Flow:
-1. **Show Azure setup** (App registration, permissions)
-2. **Demonstrate AI Foundry** (Project, model deployment)
-3. **Walk through code structure** (Tools, agent, integration)
-4. **Live demonstration** (Calendar queries, meeting creation)
-5. **Discuss customization** (Branding, additional features)
-6. **Present deployment options** (Integration paths)
+### Current Limitations
+1. **Azure AI Foundry Portal**: Cannot directly execute local Python tools
+2. **Single User**: Current implementation targets one user (DEFAULT_USER_UPN)
+3. **Terminal Interface**: Requires command line access for current demo
 
-### Key Selling Points:
-- **Enterprise Security**: Uses Microsoft's own authentication
-- **Scalable Architecture**: Built on Azure cloud infrastructure  
-- **Natural Language**: No complex commands or training needed
-- **Quick Implementation**: Can be deployed in days, not months
-- **Cost Effective**: Pay-per-use model with Azure services
+### Recommended Next Steps
+1. **Immediate**: Use interactive chat for client demos and proof of concept
+2. **Short-term**: Deploy tools as Azure services for production use
+3. **Long-term**: Build comprehensive web interface and Teams integration
+
+### Security Considerations
+- **App Registration**: Use principle of least privilege
+- **Client Secrets**: Set proper expiration and rotation policies
+- **API Permissions**: Regularly audit granted permissions
+- **Network Security**: Consider VNet integration for production
+- **Data Privacy**: Ensure compliance with organizational policies
+
+---
+
+## 📞 Support & Troubleshooting
+
+### Common Issues
+1. **"Agent doesn't respond in Azure AI Foundry"** → Tools need to be deployed as Azure services
+2. **"Authentication failed"** → Check client secret and permissions
+3. **"HTTP 400 datetime errors"** → Timezone formatting issues (handled automatically)
+4. **"Rate limiting"** → Implement backoff strategies (already included)
+
+### Debug Resources
+- Check `agent_operations.log` for detailed error information
+- Use interactive chat for real-time debugging
+- Monitor Azure AI Foundry project logs
+- Verify Graph API permissions in Azure portal
+
+---
+
+*This guide provides a complete pathway from development to production deployment, ensuring both immediate demonstration capabilities and future scalability.*
+
+---
+
+## 💡 Client Presentation Guide
+
+### Current Capabilities Demo
+
+#### 1. **Interactive Terminal Chat** (Ready Now)
+- **Live Demo**: Show real-time conversation with AI agent
+- **Full Transparency**: Display all API calls, Graph requests, token validation
+- **Natural Language**: Demonstrate complex queries in plain English
+- **Safety Controls**: Show human-in-the-loop confirmation for meeting creation
+
+#### 2. **Development Workflow** 
+```bash
+# Start interactive chat
+python src/interactive_chat.py
+
+# Example demo flow:
+👤 "What's on my schedule today?"
+👤 "Am I free next Tuesday at 3pm?"  
+👤 "Book a meeting with client@company.com tomorrow at 2pm"
+👤 "Show me next week's schedule"
+```
+
+### Future Deployment Options
+
+#### **Phase 1: Current State (Development)**
+```
+✅ Local terminal chat interface
+✅ Full API visibility and debugging
+✅ Human-in-the-loop safety controls
+✅ Real-time Microsoft Graph integration
+```
+
+#### **Phase 2: Web Application (2-3 weeks)**
+```
+🔄 Deploy as Azure App Service
+🔄 Create web-based chat interface
+🔄 Add user authentication
+🔄 Multi-user support
+```
+
+#### **Phase 3: Enterprise Integration (4-6 weeks)**
+```
+🔄 Microsoft Teams bot integration
+🔄 SharePoint integration
+🔄 Enterprise security features
+🔄 Analytics and reporting
+```
+
+### Key Demo Points
+
+#### **Show Azure AI Foundry Portal Limitation**
+1. **Open Azure AI Foundry**: Show agent creation interface
+2. **Demonstrate Issue**: Agent can call tools but tools don't execute
+3. **Explain Solution**: Tools need to be deployed as Azure services
+4. **Show Working Version**: Terminal chat with full functionality
+
+#### **Technical Architecture Explanation**
+```
+Current (Working):
+Terminal ←→ Python Agent ←→ Graph API
+             ↓
+     Azure AI Foundry (GPT-4o)
+
+Future Production:
+Web App ←→ Azure App Service ←→ Graph API
+             ↓
+     Azure AI Foundry (GPT-4o)
+```
+
+### Client Value Proposition
+
+#### **Immediate Benefits** (Available Now)
+- ✅ **Proof of Concept**: Fully working calendar AI assistant
+- ✅ **Enterprise Security**: Microsoft's own authentication system
+- ✅ **Natural Language**: No training required for users
+- ✅ **Safety Controls**: Human confirmation for important actions
+
+#### **Production Benefits** (Future Deployment)
+- 🚀 **Scalability**: Handle hundreds of concurrent users
+- 🚀 **Integration**: Teams, SharePoint, Outlook add-ins
+- 🚀 **Customization**: Branded interface, company-specific features
+- 🚀 **Analytics**: Usage tracking, performance optimization
+
+### ROI Demonstration
+
+#### **Time Savings Calculation**
+```
+Manual calendar management: 15 minutes/day per user
+AI assistant usage: 3 minutes/day per user
+Daily savings: 12 minutes per user
+Monthly savings: 6 hours per user
+Annual savings: 72 hours per user
+
+For 100 users: 7,200 hours saved annually
+At $50/hour: $360,000 annual value
+```
+
+#### **Cost Structure**
+```
+Development: One-time setup cost
+Azure Services: Pay-per-use (scales with usage)
+Maintenance: Minimal (cloud-managed infrastructure)
+ROI: Positive within 3-6 months for most organizations
+```

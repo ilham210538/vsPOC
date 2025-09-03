@@ -184,11 +184,6 @@ def read_schedule(
             raise ValueError("user_upn is required")
 
         now_utc = datetime.now(timezone.utc)
-        # Ensure we're working with 2025 dates
-        current_year = 2025
-        if now_utc.year != current_year:
-            # Override with September 3, 2025 for demo purposes
-            now_utc = datetime(2025, 9, 3, 12, 0, 0, tzinfo=timezone.utc)
         if not start_iso or not end_iso:
             start_iso = now_utc.isoformat()
             end_iso = (now_utc + timedelta(days=7)).isoformat()
@@ -219,7 +214,25 @@ async def _read_schedule_async(
 ) -> Dict[str, Any]:
     try:
         base = f"https://graph.microsoft.com/v1.0/users/{user}/calendarView"
-        url = f"{base}?startDateTime={start_iso}&endDateTime={end_iso}"
+        
+        # Fix datetime formatting - ensure proper ISO format for Graph API
+        # Graph API expects datetime in format: 2025-09-04T00:00:00.000Z or 2025-09-04T00:00:00+08:00
+        from datetime import datetime
+        
+        # Parse and reformat the datetime strings to ensure correct format
+        try:
+            start_dt = datetime.fromisoformat(start_iso.replace("Z", "+00:00"))
+            end_dt = datetime.fromisoformat(end_iso.replace("Z", "+00:00"))
+            
+            # Format as UTC ISO strings which Graph API prefers
+            start_utc = start_dt.astimezone(timezone.utc).strftime("%Y-%m-%dT%H:%M:%S.000Z")
+            end_utc = end_dt.astimezone(timezone.utc).strftime("%Y-%m-%dT%H:%M:%S.000Z")
+            
+        except Exception as dt_error:
+            logger.error(f"Datetime parsing error: {dt_error}")
+            return {"error": "datetime_parsing_error", "message": f"Invalid datetime format: {dt_error}"}
+        
+        url = f"{base}?startDateTime={start_utc}&endDateTime={end_utc}"
 
         if select:
             allowed = ["id", "subject", "start", "end", "location", "attendees", "organizer", "bodyPreview"]
@@ -228,8 +241,8 @@ async def _read_schedule_async(
                 raise ValueError(f"Invalid select fields: {invalid}")
             url += f"&$select={','.join(select)}"
         else:
-            # Default to minimal fields to reduce payload size
-            url += "&$select=id,subject,start,end,location"
+            # Include organizer information by default
+            url += "&$select=id,subject,start,end,location,organizer"
 
         if top:
             url += f"&$top={int(top)}"
@@ -252,18 +265,17 @@ async def _read_schedule_async(
         async with httpx.AsyncClient(timeout=30.0) as http_client:  # Add timeout
             resp = await http_client.get(url, headers=headers)
             
-            # Print status code for debugging
-            print(f"Response Status: {resp.status_code}")
-            
             if resp.status_code == 200:
                 data = resp.json()
                 logger.debug(f"Retrieved {len(data.get('value', []))} events")
-                print(f"Events retrieved: {len(data.get('value', []))}")
                 return data
 
             # Enhanced error handling with specific Graph API codes
             logger.error(f"HTTP {resp.status_code}: {resp.text}")
-            print(f"HTTP Error {resp.status_code}: {resp.text}")
+            
+            # Don't spam console with common format errors
+            if resp.status_code != 400:
+                print(f"ERROR: HTTP {resp.status_code}: {resp.text}")
             
             if resp.status_code == 429:  # Too Many Requests
                 retry_after = resp.headers.get('Retry-After', 'unknown')
@@ -280,7 +292,6 @@ async def _read_schedule_async(
 
     except Exception as e:
         logger.error(f"Unexpected error in calendar reading: {e}")
-        print(f"Error in calendar reading: {e}")
         return {"error": "unexpected_error", "message": "Failed to read calendar"}
 
 def create_meeting(

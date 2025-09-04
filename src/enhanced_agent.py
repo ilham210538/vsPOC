@@ -357,29 +357,29 @@ class CalendarAgent:
                 
         return outputs
 
-    def delete_agent(self) -> bool:
-        """
-        Delete the current agent instance.
+    # def delete_agent(self) -> bool:
+    #     """
+    #     Delete the current agent instance.
         
-        Returns:
-            True if deletion was successful, False otherwise
-        """
-        try:
-            if self.agent and hasattr(self.agent, 'id'):
-                agent_id = self.agent.id
-                try:
-                    self.project.agents.delete_agent(agent_id)
-                    logger.debug(f"Agent {agent_id} deleted successfully")
-                    return True
-                except Exception as api_error:
-                    logger.error(f"Azure API error deleting agent {agent_id}: {api_error}")
-                    return False
-            else:
-                logger.warning("No agent to delete (self.agent is None or missing id)")
-                return False
-        except Exception as e:
-            logger.error(f"General error deleting agent: {e}")
-            return False
+    #     Returns:
+    #         True if deletion was successful, False otherwise
+    #     """
+    #     try:
+    #         if self.agent and hasattr(self.agent, 'id'):
+    #             agent_id = self.agent.id
+    #             try:
+    #                 self.project.agents.delete_agent(agent_id)
+    #                 logger.debug(f"Agent {agent_id} deleted successfully")
+    #                 return True
+    #             except Exception as api_error:
+    #                 logger.error(f"Azure API error deleting agent {agent_id}: {api_error}")
+    #                 return False
+    #         else:
+    #             logger.warning("No agent to delete (self.agent is None or missing id)")
+    #             return False
+    #     except Exception as e:
+    #         logger.error(f"General error deleting agent: {e}")
+    #         return False
 
 def main():
     """Main function demonstrating agent usage."""

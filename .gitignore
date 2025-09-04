@@ -12,7 +12,7 @@ credentials.json
 secrets.txt
 config.ini
 
-# Python
+# Python Bruh 
 __pycache__/
 *.py[cod]
 *$py.class

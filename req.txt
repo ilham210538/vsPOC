@@ -7,9 +7,11 @@ azure-mgmt-resource>=23.0.0
 azure-mgmt-compute>=30.0.0
 azure-mgmt-network>=25.0.0
 azure-mgmt-storage>=21.0.0
+azure-mgmt-logic>=10.0.0  # For Logic App management
 # Additional recommended packages
 aiohttp>=3.8.0
 requests>=2.31.0
 typing-extensions>=4.5.0
 httpx>=0.25.0
 colorama>=0.4.6  # For beautiful colored terminal output
+flask>=2.3.0  # For callback service (optional)

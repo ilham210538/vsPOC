@@ -12,13 +12,30 @@ const logger = new RotatingLogger('debugging_logs', 30);
 
 // Install Python dependencies on startup
 console.log('🐍 Installing Python dependencies...');
+function installPythonDeps() {
+  const pythonCommands = ['python3', 'python', '/opt/python/3.11/bin/python3', '/usr/bin/python3'];
+  
+  for (const pythonCmd of pythonCommands) {
+    try {
+      console.log(`🔍 Trying ${pythonCmd}...`);
+      execSync(`${pythonCmd} --version`, { stdio: 'inherit' });
+      console.log(`✅ Found ${pythonCmd}, installing packages...`);
+      execSync(`${pythonCmd} -m pip install -r req.txt`, { stdio: 'inherit' });
+      console.log('✅ Python dependencies installed successfully!');
+      return;
+    } catch (error) {
+      console.error(`❌ ${pythonCmd} failed:`, error.message);
+    }
+  }
+  console.error('❌ No working Python installation found');
+}
+
+// Install dependencies NOW
 try {
-  const pythonCmd = process.platform === 'win32' ? 'python' : 'python3';
-  execSync(`${pythonCmd} -m pip install -r req.txt`, { stdio: 'inherit' });
-  console.log('✅ Python dependencies installed successfully!');
-} catch (error) {
-  console.error('❌ Failed to install Python dependencies:', error.message);
-  console.error('⚠️ Continuing anyway, some features may not work...');
+  installPythonDeps();
+} catch (err) {
+  console.error('❌ Python installation failed:', err);
+  console.error('⚠️ Continuing anyway...');
 }
 
 // Middleware

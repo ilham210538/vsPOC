@@ -17,8 +17,13 @@ from tools.email_tools import read_schedule, create_meeting
 from tools.datetime_tool import get_current_datetime
 from approval_callback import callback_service, start_callback_server_background
 
-# Configure logging - detailed logs to file, minimal to console
-file_handler = logging.FileHandler('agent_operations.log')
+# Configure logging - detailed logs to debugging_logs folder, minimal to console
+import os
+log_dir = 'debugging_logs'
+if not os.path.exists(log_dir):
+    os.makedirs(log_dir)
+
+file_handler = logging.FileHandler(os.path.join(log_dir, 'agent.log'))
 file_handler.setLevel(logging.DEBUG)
 file_handler.setFormatter(logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s'))
 
@@ -665,11 +670,11 @@ def main():
                 response = agent.process_message(thread_id, message)
                 
                 if response["status"] == "success":
-                    print("✅ Success")
+                    print("Success")
                     print(f"Agent: {response['message']}\n")
                     success_count += 1
                 else:
-                    print("❌ Error")
+                    print("Error")
                     print(f"Error: {response['message']}\n")
                 
                 # Add delay between requests AND ensure thread is ready
@@ -680,22 +685,22 @@ def main():
             # Clean up agent regardless of test results
             print("Cleaning up agent...")
             if agent.delete_agent():
-                print("✅ Agent cleanup completed.")
+                print("Agent cleanup completed.")
             else:
-                print("⚠️ Agent cleanup failed - please check logs.")
+                print("Agent cleanup failed - please check logs.")
             
             # Show final results
             if success_count == len(test_messages):
                 print("All tests completed successfully.")
             else:
-                print(f"⚠️ {len(test_messages) - success_count} test(s) failed.")
+                print(f"{len(test_messages) - success_count} test(s) failed.")
             
-            print("Demo completed. Check 'agent_operations.log' for detailed logs.")
+            print("Demo completed. Check 'debugging_logs/agent.log' for detailed logs.")
                 
     except Exception as e:
         logger.error(f"Main execution failed: {e}")
-        print(f"❌ Failed to initialize agent: {e}")
-        print("Check 'agent_operations.log' for detailed error information.")
+        print(f"Failed to initialize agent: {e}")
+        print("Check 'debugging_logs/agent.log' for detailed error information.")
 
 if __name__ == "__main__":
     main()

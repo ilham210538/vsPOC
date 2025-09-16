@@ -12,6 +12,15 @@ credentials.json
 secrets.txt
 config.ini
 
+# Node.js
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Production build - Express serves from /public
+/public
+
 # Python Bruh 
 __pycache__/
 *.py[cod]
@@ -67,6 +76,7 @@ Thumbs.db
 logs/
 agent_operations.log
 calendar_agent.log
+debugging_logs/
 
 # Temporary files
 *.tmp
@@ -97,3 +107,7 @@ development_config.*
 # Backup files
 *.bak
 *.backup
+
+# Testing
+coverage/
+.nyc_output

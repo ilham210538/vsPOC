@@ -20,7 +20,12 @@ from dotenv import load_dotenv
 from azure.identity import ClientSecretCredential, ManagedIdentityCredential
 
 # --- Logging setup ---
-file_handler = logging.FileHandler("calendar_agent.log")
+import os
+log_dir = 'debugging_logs'
+if not os.path.exists(log_dir):
+    os.makedirs(log_dir)
+
+file_handler = logging.FileHandler(os.path.join(log_dir, "agent.log"))
 file_handler.setLevel(logging.DEBUG)
 file_handler.setFormatter(logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s"))
 

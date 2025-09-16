@@ -22,9 +22,9 @@ def get_current_datetime(timezone_name: str = "UTC") -> Dict[str, Any]:
         now_singapore = datetime.now(singapore_tz)
         now_utc = datetime.now(timezone.utc)
         
-        # Print for visibility
-        print(f"📅 API Call: get_current_datetime()")
-        print(f"📅 Current Date/Time: {now_singapore.strftime('%B %d, %Y at %H:%M:%S SGT')} | UTC: {now_utc.strftime('%B %d, %Y at %H:%M:%S UTC')}")
+        # Log without emojis to avoid encoding issues
+        print(f"API Call: get_current_datetime()")
+        print(f"Current Date/Time: {now_singapore.strftime('%B %d, %Y at %H:%M:%S SGT')} | UTC: {now_utc.strftime('%B %d, %Y at %H:%M:%S UTC')}")
         
         # Return comprehensive datetime information using Singapore time as primary
         return {
@@ -43,7 +43,7 @@ def get_current_datetime(timezone_name: str = "UTC") -> Dict[str, Any]:
         }
         
     except Exception as e:
-        print(f"❌ Error getting current datetime: {e}")
+        print(f"Error getting current datetime: {e}")
         return {
             "status": "error",
             "message": f"Failed to get current datetime: {str(e)}"

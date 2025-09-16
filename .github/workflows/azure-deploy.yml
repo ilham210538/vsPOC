@@ -39,11 +39,21 @@ jobs:
           npm run build --if-present
           npm run test --if-present
 
+      - name: Verify public folder exists
+        run: |
+          ls -la
+          ls -la public/
+          echo "Contents of public folder verified"
+
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
         with:
           name: node-app
-          path: .
+          path: |
+            .
+            !node_modules
+            !.git
+            !.github
 
   deploy:
     runs-on: ubuntu-latest

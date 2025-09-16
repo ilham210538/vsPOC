@@ -61,5 +61,5 @@ jobs:
         with:
           app-name: 'vs-poc-web-app'
           slot-name: 'Production'
-          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_C6C87A7E817C4C93AB807CE6B26C3C2F }}
+          publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
           package: .

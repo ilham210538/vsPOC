@@ -5,10 +5,10 @@
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
-    "dev": "nodemon server.js",
+    "dev": "nodemon server.js", 
     "build": "echo 'Frontend already built in public/ folder'",
     "test": "echo 'No tests specified'",
-    "postinstall": "python3 -m pip install -r req.txt || python -m pip install -r req.txt"
+    "postinstall": "node install-python-deps.js"
   },
   "engines": {
     "node": ">=18.0.0",

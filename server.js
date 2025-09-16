@@ -1,7 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const path = require('path');
-const { spawn } = require('child_process');
+const { spawn, execSync } = require('child_process');
 const RotatingLogger = require('./src/logger');
 
 const app = express();
@@ -9,6 +9,17 @@ const PORT = process.env.PORT || 3000;
 
 // Initialize rotating logger
 const logger = new RotatingLogger('debugging_logs', 30);
+
+// Install Python dependencies on startup
+console.log('🐍 Installing Python dependencies...');
+try {
+  const pythonCmd = process.platform === 'win32' ? 'python' : 'python3';
+  execSync(`${pythonCmd} -m pip install -r req.txt`, { stdio: 'inherit' });
+  console.log('✅ Python dependencies installed successfully!');
+} catch (error) {
+  console.error('❌ Failed to install Python dependencies:', error.message);
+  console.error('⚠️ Continuing anyway, some features may not work...');
+}
 
 // Middleware
 app.use(cors());

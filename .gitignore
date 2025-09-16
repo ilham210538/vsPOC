@@ -19,7 +19,7 @@ yarn-debug.log*
 yarn-error.log*
 
 # Production build - Express serves from /public
-/public
+# /public  # Commented out - we need public folder for deployment
 
 # Python Bruh 
 __pycache__/

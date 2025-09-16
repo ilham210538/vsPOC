@@ -13,13 +13,32 @@ const logger = new RotatingLogger('debugging_logs', 30);
 // Install Python dependencies on startup
 console.log('🐍 Installing Python dependencies...');
 function installPythonDeps() {
-  const pythonCommands = ['python3', 'python', '/opt/python/3.11/bin/python3', '/usr/bin/python3'];
+  const pythonCommands = ['python3', 'python', '/usr/bin/python3'];
   
   for (const pythonCmd of pythonCommands) {
     try {
       console.log(`🔍 Trying ${pythonCmd}...`);
       execSync(`${pythonCmd} --version`, { stdio: 'inherit' });
-      console.log(`✅ Found ${pythonCmd}, installing packages...`);
+      console.log(`✅ Found ${pythonCmd}, checking pip...`);
+      
+      // Try to install pip first if it's missing
+      try {
+        execSync(`${pythonCmd} -m pip --version`, { stdio: 'inherit' });
+        console.log(`✅ pip is available`);
+      } catch (pipError) {
+        console.log(`❌ pip missing, trying to install it...`);
+        try {
+          // Try to install pip using ensurepip
+          execSync(`${pythonCmd} -m ensurepip --upgrade`, { stdio: 'inherit' });
+          console.log(`✅ pip installed via ensurepip`);
+        } catch (ensurepipError) {
+          console.log(`❌ ensurepip failed, trying apt-get...`);
+          execSync(`apt-get update && apt-get install -y python3-pip`, { stdio: 'inherit' });
+          console.log(`✅ pip installed via apt-get`);
+        }
+      }
+      
+      console.log(`✅ Installing packages...`);
       execSync(`${pythonCmd} -m pip install -r req.txt`, { stdio: 'inherit' });
       console.log('✅ Python dependencies installed successfully!');
       return;

@@ -27,7 +27,9 @@ function sendToAgentSession(action, message = null) {
     const pythonScript = path.join(__dirname, 'src', 'agent_session.py');
     
     // Use virtual environment Python
-    const pythonPath = path.join(__dirname, '.venv', 'Scripts', 'python.exe');
+    const pythonPath = process.platform === 'win32' 
+      ? path.join(__dirname, '.venv', 'Scripts', 'python.exe')
+      : 'python3'; // Use system python on Linux (Azure)
     
     // Build command arguments
     const args = ['--action', action, '--json'];
@@ -47,6 +49,7 @@ function sendToAgentSession(action, message = null) {
     
     python.stderr.on('data', (data) => {
       errorOutput += data.toString();
+      console.error('🐍 Python stderr:', data.toString());
     });
     
     python.on('close', (code) => {
@@ -59,6 +62,8 @@ function sendToAgentSession(action, message = null) {
           }
           resolve(result);
         } catch (e) {
+          console.error('❌ Failed to parse Python output:', e);
+          console.error('❌ Raw output:', output);
           logger.server(`Failed to parse Python output: ${output}`);
           resolve({
             status: 'error',
@@ -67,6 +72,8 @@ function sendToAgentSession(action, message = null) {
           });
         }
       } else {
+        console.error('❌ Python script failed with code:', code);
+        console.error('❌ Error output:', errorOutput);
         logger.server(`Python script error: ${errorOutput}`);
         reject(new Error(errorOutput || 'Python script failed'));
       }

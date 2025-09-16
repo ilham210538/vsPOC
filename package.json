@@ -6,8 +6,8 @@
   "scripts": {
     "start": "node server.js",
     "dev": "nodemon server.js",
-    "build": "cd frontend && npm install && npm run build && xcopy /E /I /Y build ..\\public",
-    "postinstall": "npm run build"
+    "build": "echo 'Frontend already built in public/ folder'",
+    "test": "echo 'No tests specified'"
   },
   "engines": {
     "node": ">=18.0.0",

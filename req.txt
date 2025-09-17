@@ -1,4 +1,4 @@
-azure-ai-projects>=1.0.0
+azure-ai-projects>=1.0.0b10
 azure-identity>=1.15.0
 msgraph-sdk>=1.0.0
 python-dateutil>=2.8.2

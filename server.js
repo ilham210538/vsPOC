@@ -10,52 +10,9 @@ const PORT = process.env.PORT || 3000;
 // Initialize rotating logger
 const logger = new RotatingLogger('debugging_logs', 30);
 
-// Install Python dependencies on startup
-console.log('🐍 Installing Python dependencies...');
-function installPythonDeps() {
-  const pythonCommands = ['python3', 'python', '/usr/bin/python3'];
-  
-  for (const pythonCmd of pythonCommands) {
-    try {
-      console.log(`🔍 Trying ${pythonCmd}...`);
-      execSync(`${pythonCmd} --version`, { stdio: 'inherit' });
-      console.log(`✅ Found ${pythonCmd}, checking pip...`);
-      
-      // Try to install pip first if it's missing
-      try {
-        execSync(`${pythonCmd} -m pip --version`, { stdio: 'inherit' });
-        console.log(`✅ pip is available`);
-      } catch (pipError) {
-        console.log(`❌ pip missing, trying to install it...`);
-        try {
-          // Try to install pip using ensurepip
-          execSync(`${pythonCmd} -m ensurepip --upgrade`, { stdio: 'inherit' });
-          console.log(`✅ pip installed via ensurepip`);
-        } catch (ensurepipError) {
-          console.log(`❌ ensurepip failed, trying apt-get...`);
-          execSync(`apt-get update && apt-get install -y python3-pip`, { stdio: 'inherit' });
-          console.log(`✅ pip installed via apt-get`);
-        }
-      }
-      
-      console.log(`✅ Installing packages...`);
-      execSync(`${pythonCmd} -m pip install -r req.txt`, { stdio: 'inherit' });
-      console.log('✅ Python dependencies installed successfully!');
-      return;
-    } catch (error) {
-      console.error(`❌ ${pythonCmd} failed:`, error.message);
-    }
-  }
-  console.error('❌ No working Python installation found');
-}
-
-// Install dependencies NOW
-try {
-  installPythonDeps();
-} catch (err) {
-  console.error('❌ Python installation failed:', err);
-  console.error('⚠️ Continuing anyway...');
-}
+// Use system python on App Service (Linux) - dependencies are vendored in py_deps folder
+console.log('🐍 Python dependencies pre-installed in py_deps folder via GitHub Actions');
+const pythonPath = 'python3';
 
 // Middleware
 app.use(cors());
@@ -73,10 +30,8 @@ function sendToAgentSession(action, message = null) {
   return new Promise((resolve, reject) => {
     const pythonScript = path.join(__dirname, 'src', 'agent_session.py');
     
-    // Use virtual environment Python
-    const pythonPath = process.platform === 'win32' 
-      ? path.join(__dirname, '.venv', 'Scripts', 'python.exe')
-      : 'python3'; // Use system python on Linux (Azure)
+    // Use system python - dependencies are in py_deps folder via PYTHONPATH
+    const python_cmd = 'python3';
     
     // Build command arguments
     const args = ['--action', action, '--json'];
@@ -84,8 +39,8 @@ function sendToAgentSession(action, message = null) {
       args.push('--message', message);
     }
     
-    // Spawn Python process with venv
-    const python = spawn(pythonPath, [pythonScript, ...args]);
+    // Spawn Python process
+    const python = spawn(python_cmd, [pythonScript, ...args]);
     
     let output = '';
     let errorOutput = '';

@@ -32,7 +32,27 @@ jobs:
         run: |
           npm install
           python -m pip install --upgrade pip
-          pip install -r req.txt
+
+      - name: Vendor Python dependencies into repo
+        run: |
+          # Prefer wheels; if any package has no wheel, fall back to source build
+          pip install --only-binary :all: --target ./py_deps -r req.txt || \
+          pip install --target ./py_deps -r req.txt
+          chmod -R a+rX py_deps
+
+      - name: Sanity check vendored imports
+        run: |
+          PYTHONPATH="$PWD/py_deps" python - << 'PY'
+          import sys
+          print("Python:", sys.version)
+          print("PYTHONPATH ok?", any("py_deps" in p for p in sys.path))
+          import dotenv, aiohttp, requests, dateutil, msgraph
+          print("Loaded:", "dotenv", dotenv.__version__)
+          print("aiohttp ok")
+          print("requests ok")  
+          print("dateutil ok")
+          print("msgraph ok")
+          PY
 
       - name: Build application
         run: |

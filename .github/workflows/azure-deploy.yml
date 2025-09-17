@@ -46,12 +46,24 @@ jobs:
           import sys
           print("Python:", sys.version)
           print("PYTHONPATH ok?", any("py_deps" in p for p in sys.path))
-          import dotenv, aiohttp, requests, dateutil, msgraph
-          print("Loaded:", "dotenv", dotenv.__version__)
-          print("aiohttp ok")
-          print("requests ok")  
-          print("dateutil ok")
-          print("msgraph ok")
+          
+          # Test critical imports
+          import dotenv
+          print("dotenv: imported successfully")
+          
+          import aiohttp
+          print("aiohttp:", aiohttp.__version__)
+          
+          import requests
+          print("requests:", requests.__version__)
+          
+          import dateutil
+          print("dateutil:", dateutil.__version__)
+          
+          import msgraph
+          print("msgraph: imported successfully")
+          
+          print("All imports successful!")
           PY
 
       - name: Build application

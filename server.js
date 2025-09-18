@@ -40,7 +40,12 @@ function sendToAgentSession(action, message = null) {
     }
     
     // Spawn Python process
-    const python = spawn(python_cmd, [pythonScript, ...args]);
+    const python = spawn(python_cmd, [pythonScript, ...args], {
+      env: {
+        ...process.env,
+        PYTHONPATH: path.join(__dirname, 'py_deps')
+      }
+    });
     
     let output = '';
     let errorOutput = '';

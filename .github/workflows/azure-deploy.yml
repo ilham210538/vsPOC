@@ -40,13 +40,11 @@ jobs:
           pip install --target ./py_deps -r req.txt
           chmod -R a+rX py_deps
 
-      - name: Install frontend dependencies and build
+      - name: Verify public folder exists (pre-built frontend)
         run: |
-          cd frontend
-          npm install
-          npm run build
-          cd ..
-          echo "Frontend built successfully"
+          ls -la
+          ls -la public/
+          echo "Using pre-built frontend from public/ folder"
 
       - name: Sanity check vendored imports
         run: |
@@ -76,7 +74,6 @@ jobs:
 
       - name: Build application
         run: |
-          npm run build --if-present
           npm run test --if-present
 
       - name: Verify public folder exists

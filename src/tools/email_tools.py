@@ -27,10 +27,10 @@ if not os.path.exists(log_dir):
 
 file_handler = logging.FileHandler(os.path.join(log_dir, "agent.log"))
 file_handler.setLevel(logging.DEBUG)
-file_handler.setFormatter(logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s"))
+file_handler.setFormatter(logging.Formatter("%(asctime)s | %(levelname)-8s | %(name)s | %(message)s"))
 
 console_handler = logging.StreamHandler()
-console_handler.setLevel(logging.ERROR)
+console_handler.setLevel(logging.ERROR)  # Only errors to console
 console_handler.setFormatter(logging.Formatter("%(levelname)s: %(message)s"))
 
 logger = logging.getLogger(__name__)

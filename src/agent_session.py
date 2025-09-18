@@ -34,7 +34,7 @@ class RotatingFileLogger:
     
     def log(self, filename, message):
         log_file = os.path.join(self.log_dir, f"{filename}.log")
-        timestamp = datetime.now().isoformat()
+        timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         log_entry = f"[{timestamp}] {message}"
         
         try:
@@ -44,6 +44,11 @@ class RotatingFileLogger:
                 with open(log_file, 'r', encoding='utf-8') as f:
                     existing_lines = [line.strip() for line in f.readlines() if line.strip()]
             
+            # Add session separator for new actions
+            if 'Initializing' in message or 'Starting cleanup' in message:
+                existing_lines.append('')  # Add spacing
+                existing_lines.append('-' * 50)
+            
             # Add new line
             existing_lines.append(log_entry)
             
@@ -51,7 +56,7 @@ class RotatingFileLogger:
             if len(existing_lines) > self.max_lines:
                 existing_lines = existing_lines[-self.max_lines:]
             
-            # Write back
+            # Write back with clean formatting
             with open(log_file, 'w', encoding='utf-8') as f:
                 f.write('\n'.join(existing_lines) + '\n')
                 
@@ -110,13 +115,13 @@ class AgentSession:
                         "thread_id": None
                     }
             
-            file_logger.agent(f'Processing message: {message[:50]}... (using existing agent {self.agent_id}, thread {self.thread_id})')
+            file_logger.agent(f'Processing: "{message[:30]}..." (Agent: {self.agent_id})')
             
             # Suppress debug output for clean JSON
             with self._suppress_stdout():
                 response = self.agent.process_message(self.thread_id, message)
             
-            file_logger.agent(f'Message processed successfully, status: {response["status"]}, keeping session alive')
+            file_logger.agent(f'Processed successfully: {response["status"]}')
             
             return {
                 "status": response["status"],

@@ -15,7 +15,7 @@ class RotatingLogger {
   log(filename, message) {
     const logFile = path.join(this.logDir, `${filename}.log`);
     const timestamp = new Date().toISOString();
-    const logEntry = `[${timestamp}] ${message}\n`;
+    const logEntry = `[${timestamp}] ${message}`;
     
     try {
       // Read existing lines if file exists
@@ -25,15 +25,23 @@ class RotatingLogger {
         existingLines = content.split('\n').filter(line => line.trim());
       }
       
+      // Add separator line for new sessions (when server starts)
+      if (message.includes('server started') || message.includes('Calendar Agent server')) {
+        existingLines.push(''); // Add blank line
+        existingLines.push('='.repeat(80));
+        existingLines.push(`NEW SESSION - ${timestamp}`);
+        existingLines.push('='.repeat(80));
+      }
+      
       // Add new line
-      existingLines.push(logEntry.trim());
+      existingLines.push(logEntry);
       
       // Keep only last maxLines
       if (existingLines.length > this.maxLines) {
         existingLines = existingLines.slice(-this.maxLines);
       }
       
-      // Write back to file
+      // Write back to file with proper spacing
       fs.writeFileSync(logFile, existingLines.join('\n') + '\n');
       
     } catch (error) {

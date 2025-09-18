@@ -40,6 +40,14 @@ jobs:
           pip install --target ./py_deps -r req.txt
           chmod -R a+rX py_deps
 
+      - name: Install frontend dependencies and build
+        run: |
+          cd frontend
+          npm install
+          npm run build
+          cd ..
+          echo "Frontend built successfully"
+
       - name: Sanity check vendored imports
         run: |
           PYTHONPATH="$PWD/py_deps" python - << 'PY'

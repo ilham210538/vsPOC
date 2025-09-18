@@ -5,14 +5,42 @@ const { spawn, execSync } = require('child_process');
 const RotatingLogger = require('./src/logger');
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 8080;
 
 // Initialize rotating logger
 const logger = new RotatingLogger('debugging_logs', 30);
 
-// Use system python on App Service (Linux) - dependencies are vendored in py_deps folder
+// Detect Python executable based on environment
+let pythonPath;
+if (process.env.WEBSITE_INSTANCE_ID) {
+  // Azure App Service (Linux) - use system python3
+  pythonPath = 'python3';
+  console.log('🐍 Running on Azure App Service - using python3');
+} else {
+  // Local development - try different Python executables
+  try {
+    execSync('python --version', { stdio: 'ignore' });
+    pythonPath = 'python';
+    console.log('🐍 Local development - using python');
+  } catch {
+    try {
+      execSync('python3 --version', { stdio: 'ignore' });
+      pythonPath = 'python3';
+      console.log('🐍 Local development - using python3');
+    } catch {
+      try {
+        execSync('py --version', { stdio: 'ignore' });
+        pythonPath = 'py';
+        console.log('🐍 Local development - using py launcher');
+      } catch {
+        console.error('❌ No Python executable found! Install Python or activate your virtual environment.');
+        process.exit(1);
+      }
+    }
+  }
+}
+
 console.log('🐍 Python dependencies pre-installed in py_deps folder via GitHub Actions');
-const pythonPath = 'python3';
 
 // Middleware
 app.use(cors());
@@ -30,8 +58,8 @@ function sendToAgentSession(action, message = null) {
   return new Promise((resolve, reject) => {
     const pythonScript = path.join(__dirname, 'src', 'agent_session.py');
     
-    // Use system python - dependencies are in py_deps folder via PYTHONPATH
-    const python_cmd = 'python3';
+    // Use detected python executable - dependencies are in py_deps folder via PYTHONPATH
+    const python_cmd = pythonPath;
     
     // Build command arguments
     const args = ['--action', action, '--json'];
@@ -55,8 +83,16 @@ function sendToAgentSession(action, message = null) {
     });
     
     python.stderr.on('data', (data) => {
-      errorOutput += data.toString();
-      console.error('🐍 Python stderr:', data.toString());
+      const stderrText = data.toString().trim();
+      errorOutput += stderrText;
+      
+      // Only log actual errors, not debug/info messages from Python
+      if (stderrText.includes('ERROR:') || stderrText.includes('CRITICAL:') || stderrText.includes('Exception') || stderrText.includes('Traceback')) {
+        console.error('� Python Error:', stderrText);
+      } else if (stderrText.includes('WARNING:')) {
+        console.warn('⚠️  Python Warning:', stderrText);
+      }
+      // Suppress debug/info stderr spam in Azure Log Stream
     });
     
     python.on('close', (code) => {

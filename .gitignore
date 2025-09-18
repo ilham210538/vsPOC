@@ -21,6 +21,11 @@ yarn-error.log*
 # Production build - Express serves from /public
 # /public  # Commented out - we need public folder for deployment
 
+# Frontend source code - only push built files to /public
+frontend/
+!frontend/package.json
+!frontend/README.md
+
 # Python Bruh 
 __pycache__/
 *.py[cod]

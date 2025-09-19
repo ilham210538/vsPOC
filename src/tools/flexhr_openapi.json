@@ -1,0 +1,542 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "FlexHR Leave Bot API",
+    "version": "1.0.0",
+    "description": "FlexHR leave operations for Submitter/Approver.\nAlways login first to obtain a `token`, then pass that `token` and the SAME `devid` in subsequent requests."
+  },
+  "servers": [
+    {
+      "url": "https://dev.renecosystem.com/reneco_int/api"
+    }
+  ],
+  "paths": {
+    "/MDP/LoginDevice": {
+      "post": {
+        "operationId": "login_submitter",
+        "summary": "Login (submitter or approver) to obtain token",
+        "description": "Login device to obtain a session token for subsequent calls.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginBody"
+              },
+              "example": {
+                "login": "lee001",
+                "pwd": "password1vs",
+                "buid": "a33a4b19-ae4d-4dbf-b5b2-c6ae513a48e3",
+                "appver": "10.2.1",
+                "devid": "990000862471854",
+                "colastsync": "2017-11-15 19:45:12",
+                "emplastsync": "2017-11-15 19:45:12",
+                "usrlastsync": "2017-11-15 19:45:12",
+                "langid": "en-US",
+                "tz": "8"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Login OK, returns a JSON object with a token",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LoginResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/mLeavz/LeaveEntitlementSummary": {
+      "post": {
+        "operationId": "leave_entitlement_summary",
+        "summary": "Get leave entitlement summary",
+        "description": "Returns high-level leave balances for a year for a given employee number.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LeaveEntitlementSummaryRequest"
+              },
+              "example": {
+                "token": "<token-from-login>",
+                "devid": "990000862471854",
+                "isrfsh": "true",
+                "empnum": "lee001",
+                "entlyr": "2025",
+                "startDate": ""
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Entitlement summary returned",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/mLeavz/LeaveEntitlement": {
+      "post": {
+        "operationId": "leave_entitlement_detail",
+        "summary": "Get leave entitlement detail for a specific code",
+        "description": "Detailed entitlement for a specific leave code (e.g., #AL).",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LeaveEntitlementDetailRequest"
+              },
+              "example": {
+                "token": "<token-from-login>",
+                "devid": "990000862471854",
+                "isrfsh": "true",
+                "empnum": "lee001",
+                "entlyr": "2025",
+                "lvecode": "#AL",
+                "startDate": "",
+                "docref": ""
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Entitlement detail returned",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/mLeavz/LeaveListing": {
+      "post": {
+        "operationId": "leave_listing",
+        "summary": "List leave documents",
+        "description": "Returns a paginated list of leave documents. Use to find docref for later actions.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LeaveListingRequest"
+              },
+              "example": {
+                "token": "<token-from-login>",
+                "devid": "990000862471854",
+                "isrfsh": "true",
+                "viewas": "P",
+                "statarr": "1,3,4,6,5,9",
+                "ttlstatarr": "1,3",
+                "dtfrm": "2025-01-01",
+                "dtto": "2025-12-31",
+                "doctyparr": "",
+                "ownnum": "",
+                "perpgcnt": "1000",
+                "nowcnt": "1",
+                "dtmodify": "2025-06-03"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Listing returned",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/mLeavz/LeaveSubmission": {
+      "post": {
+        "operationId": "leave_submit",
+        "summary": "Submit a leave request",
+        "description": "Submit a leave request. NOTE: `newlve` must be a string containing a JSON array payload.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LeaveSubmissionRequest"
+              },
+              "example": {
+                "token": "<token-from-login>",
+                "devid": "990000862471854",
+                "isrfsh": "true",
+                "submitterempnum": "lee001",
+                "ownerempnum": "lee001",
+                "docref": "",
+                "newlve": "[{\"LeaveId\":\"00000000-0000-0000-0000-000000000000\",\"StartDate\":\"2025-09-24 00:00:00+08:00\",\"EndDate\":\"2025-09-24 00:00:00+08:00\",\"StartTime\":\"\",\"EndTime\":\"\",\"StartTimeVal\":\"2025-09-18T13:26:47+08:00\",\"EndTimeVal\":\"2025-09-18T13:26:47+08:00\",\"LeaveCode\":\"#AL\",\"NumberOfDays\":\"1.0\",\"NumberOfHours\":\"0.0\",\"DaySession\":\"0\",\"EntitleYear\":2025,\"IsAdvance\":false,\"ReasonCode\":\"\",\"AccidentRef\":\"\",\"MedicalRef\":\"\",\"SubmitterRemark\":\"\",\"OwnerEmployeeNo\":\"LEE001\",\"SubmitterType\":\"PE\",\"SlipName\":\"\",\"SlipData\":\"\",\"SubmitterEmployeeNo\":\"LEE001\",\"LeaveCustomField\":\"\",\"Attr\":\"\",\"LeaveDuration\":0,\"Platform\":2,\"Attr1\":\"\",\"Attr2\":\"\",\"Attr3\":\"\",\"Attr4\":\"\",\"Attr5\":\"\",\"Attr6\":\"\",\"Attr7\":\"\",\"Attr8\":\"\",\"Attr9\":\"\",\"Attr10\":\"\",\"AttachmentList\":[],\"isLinkRemark\":false,\"SlipDescription\":\"\",\"FileExtension\":\"\",\"FileSize\":\"\",\"designatedAppr1\":\"\",\"designatedAppr2\":\"\",\"designatedAppr3\":\"\",\"designatedAppr4\":\"\",\"designatedAppr5\":\"\",\"verifier\":\"\",\"designatedAppr1EmpNo\":\"\",\"designatedAppr2EmpNo\":\"\",\"designatedAppr3EmpNo\":\"\",\"designatedAppr4EmpNo\":\"\",\"designatedAppr5EmpNo\":\"\",\"verifierEmpNo\":\"\",\"designatedNotf\":[],\"isDesignatedApproverEnabled\":false,\"DesignatedApprover\":\"\",\"isVerifierRequired\":false,\"isDesignatedNotificationEnabled\":false,\"DesignatedNotification\":\"\"}]",
+                "acttkn": "2"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Submission result",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/mLeavz/LeaveAction": {
+      "post": {
+        "operationId": "leave_action",
+        "summary": "Take action on a leave (withdraw, approve, reject)",
+        "description": "Use acttkn 5=Withdraw, 6=Approve, 8=Reject.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LeaveActionRequest"
+              },
+              "example": {
+                "token": "<token-from-login>",
+                "devid": "990000862471854",
+                "isrfsh": "true",
+                "docrefarr": "LVE000000010369",
+                "acttkn": "6",
+                "rmk": "approved by manager"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Action result",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "LoginBody": {
+        "type": "object",
+        "required": [
+          "login",
+          "pwd",
+          "buid",
+          "appver",
+          "devid",
+          "colastsync",
+          "emplastsync",
+          "usrlastsync",
+          "langid",
+          "tz"
+        ],
+        "properties": {
+          "login": {
+            "type": "string"
+          },
+          "pwd": {
+            "type": "string"
+          },
+          "buid": {
+            "type": "string"
+          },
+          "appver": {
+            "type": "string"
+          },
+          "devid": {
+            "type": "string"
+          },
+          "colastsync": {
+            "type": "string"
+          },
+          "emplastsync": {
+            "type": "string"
+          },
+          "usrlastsync": {
+            "type": "string"
+          },
+          "langid": {
+            "type": "string"
+          },
+          "tz": {
+            "type": "string"
+          }
+        }
+      },
+      "LoginResponse": {
+        "type": "object",
+        "properties": {
+          "token": {
+            "type": "string",
+            "description": "Session token to use in subsequent requests."
+          }
+        }
+      },
+      "LeaveEntitlementSummaryRequest": {
+        "type": "object",
+        "required": [
+          "token",
+          "devid",
+          "isrfsh",
+          "empnum",
+          "entlyr"
+        ],
+        "properties": {
+          "token": {
+            "type": "string"
+          },
+          "devid": {
+            "type": "string"
+          },
+          "isrfsh": {
+            "type": "string",
+            "enum": [
+              "true",
+              "false"
+            ]
+          },
+          "empnum": {
+            "type": "string"
+          },
+          "entlyr": {
+            "type": "string"
+          },
+          "startDate": {
+            "type": "string",
+            "nullable": true
+          }
+        }
+      },
+      "LeaveEntitlementDetailRequest": {
+        "type": "object",
+        "required": [
+          "token",
+          "devid",
+          "isrfsh",
+          "empnum",
+          "entlyr",
+          "lvecode"
+        ],
+        "properties": {
+          "token": {
+            "type": "string"
+          },
+          "devid": {
+            "type": "string"
+          },
+          "isrfsh": {
+            "type": "string",
+            "enum": [
+              "true",
+              "false"
+            ]
+          },
+          "empnum": {
+            "type": "string"
+          },
+          "entlyr": {
+            "type": "string"
+          },
+          "lvecode": {
+            "type": "string"
+          },
+          "startDate": {
+            "type": "string",
+            "nullable": true
+          },
+          "docref": {
+            "type": "string",
+            "nullable": true
+          }
+        }
+      },
+      "LeaveListingRequest": {
+        "type": "object",
+        "required": [
+          "token",
+          "devid",
+          "isrfsh",
+          "viewas",
+          "statarr",
+          "dtfrm",
+          "dtto",
+          "perpgcnt",
+          "nowcnt"
+        ],
+        "properties": {
+          "token": {
+            "type": "string"
+          },
+          "devid": {
+            "type": "string"
+          },
+          "isrfsh": {
+            "type": "string",
+            "enum": [
+              "true",
+              "false"
+            ]
+          },
+          "viewas": {
+            "type": "string"
+          },
+          "statarr": {
+            "type": "string"
+          },
+          "ttlstatarr": {
+            "type": "string",
+            "nullable": true
+          },
+          "dtfrm": {
+            "type": "string"
+          },
+          "dtto": {
+            "type": "string"
+          },
+          "doctyparr": {
+            "type": "string",
+            "nullable": true
+          },
+          "ownnum": {
+            "type": "string",
+            "nullable": true
+          },
+          "perpgcnt": {
+            "type": "string"
+          },
+          "nowcnt": {
+            "type": "string"
+          },
+          "dtmodify": {
+            "type": "string",
+            "nullable": true
+          }
+        }
+      },
+      "LeaveSubmissionRequest": {
+        "type": "object",
+        "required": [
+          "token",
+          "devid",
+          "isrfsh",
+          "submitterempnum",
+          "ownerempnum",
+          "newlve",
+          "acttkn"
+        ],
+        "properties": {
+          "token": {
+            "type": "string"
+          },
+          "devid": {
+            "type": "string"
+          },
+          "isrfsh": {
+            "type": "string",
+            "enum": [
+              "true",
+              "false"
+            ]
+          },
+          "submitterempnum": {
+            "type": "string"
+          },
+          "ownerempnum": {
+            "type": "string"
+          },
+          "docref": {
+            "type": "string",
+            "nullable": true
+          },
+          "newlve": {
+            "type": "string",
+            "description": "Stringified JSON array containing leave entries."
+          },
+          "acttkn": {
+            "type": "string",
+            "enum": [
+              "2"
+            ],
+            "description": "Action token for submission: 2 = Submit"
+          }
+        }
+      },
+      "LeaveActionRequest": {
+        "type": "object",
+        "required": [
+          "token",
+          "devid",
+          "isrfsh",
+          "docrefarr",
+          "acttkn"
+        ],
+        "properties": {
+          "token": {
+            "type": "string"
+          },
+          "devid": {
+            "type": "string"
+          },
+          "isrfsh": {
+            "type": "string",
+            "enum": [
+              "true",
+              "false"
+            ]
+          },
+          "docrefarr": {
+            "type": "string"
+          },
+          "acttkn": {
+            "type": "string",
+            "enum": [
+              "5",
+              "6",
+              "8"
+            ],
+            "description": "5=Withdraw, 6=Approve, 8=Reject"
+          },
+          "rmk": {
+            "type": "string",
+            "nullable": true
+          }
+        }
+      }
+    }
+  }
+}

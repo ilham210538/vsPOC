@@ -12,13 +12,14 @@ from typing import Dict, Any, List
 from dotenv import load_dotenv
 from azure.identity import DefaultAzureCredential
 from azure.ai.projects import AIProjectClient
-from azure.ai.agents.models import FunctionTool
-from tools.email_tools import read_schedule, create_meeting
-from tools.datetime_tool import get_current_datetime
-from tools.flexhr_leave_api import (
-    login_submitter, leave_entitlement_summary, leave_entitlement_detail,
-    leave_listing, leave_submit, leave_withdraw, leave_approve, leave_reject
-)
+from azure.ai.agents.models import FunctionTool, OpenApiTool
+try:
+    from .tools.email_tools import read_schedule, create_meeting
+    from .tools.datetime_tool import get_current_datetime
+except ImportError:
+    # Fallback for direct execution
+    from tools.email_tools import read_schedule, create_meeting
+    from tools.datetime_tool import get_current_datetime
 
 # Configure logging - detailed logs to debugging_logs folder, minimal to console
 import os
@@ -65,18 +66,29 @@ class CalendarAgent:
             # Base calendar tools
             base_functions = {read_schedule, create_meeting, get_current_datetime}
             
-            # FlexHR Leave management tools
-            flexhr_functions = {
-                login_submitter, leave_entitlement_summary, leave_entitlement_detail,
-                leave_listing, leave_submit, leave_withdraw, leave_approve, leave_reject
-            }
+            # FlexHR Leave management tools from OpenAPI spec
+            openapi_spec_path = os.path.join(os.path.dirname(__file__), "tools", "flexhr_openapi.json")
             
-            # Combine all functions
-            all_functions = base_functions.union(flexhr_functions)
-            logger.debug("Function tools initialized with calendar and FlexHR leave management functions")
+            # Load the OpenAPI spec
+            with open(openapi_spec_path, 'r') as f:
+                flexhr_spec = json.load(f)
             
-            self.tools = FunctionTool(functions=all_functions)
-            logger.debug("Function tools initialized successfully")
+            # Create OpenApiTool with proper parameters
+            from azure.ai.agents.models import OpenApiAnonymousAuthDetails
+            flexhr_tools = OpenApiTool(
+                name="FlexHR_Leave_API",
+                description="FlexHR leave operations for Submitter/Approver",
+                spec=flexhr_spec,
+                auth=OpenApiAnonymousAuthDetails()  # No auth required for this API
+            )
+            
+            # Create tools list for agent
+            self.tools = [FunctionTool(functions=base_functions), flexhr_tools]
+            logger.debug("Function tools initialized with calendar functions and FlexHR OpenAPI spec")
+            
+        except Exception as e:
+            logger.error(f"Failed to initialize function tools: {e}")
+            raise
         except Exception as e:
             logger.error(f"Failed to initialize function tools: {e}")
             raise
@@ -144,6 +156,14 @@ class CalendarAgent:
                     "3. **NEVER REVEAL CREDENTIALS**: Never show raw tokens, passwords, or test credentials in responses"
                     "4. **DEFAULT TO SUBMITTER**: Use submitter persona unless user explicitly asks for approver/manager actions"
                     
+                    "### FlexHR Test Environment Credentials:"
+                    "For login_submitter calls, use these test credentials:"
+                    "- Submitter: login='lee001', pwd='password1vs'"
+                    "- Approver: login='lee003', pwd='password1vs'"
+                    "- Standard parameters: buid='a33a4b19-ae4d-4dbf-b5b2-c6ae513a48e3', appver='10.2.1', devid='990000862471854'"
+                    "- Sync timestamps: colastsync='2017-11-15 19:45:12', emplastsync='2017-11-15 19:45:12', usrlastsync='2017-11-15 19:45:12'"
+                    "- Locale settings: langid='en-US', tz='8'"
+                    
                     "### Leave Request Process:"
                     "When user wants to submit leave:"
                     "1. Login as submitter first"
@@ -196,7 +216,7 @@ class CalendarAgent:
                     "- Be helpful and professional in all interactions"
                     "- Summarize results without exposing technical API details"
                 ),
-                tools=self.tools.definitions,
+                tools=[def_item for tool in self.tools for def_item in tool.definitions],
             )
             self.agent = agent_obj
             logger.debug(f"Agent '{name}' created successfully with ID: {agent_obj.id}")
@@ -234,6 +254,9 @@ class CalendarAgent:
         """
         logger.debug(f"Processing message in thread {thread_id}: {message[:100]}...")
         
+        # Initialize tool calls tracking
+        all_tool_calls = []
+        
         try:
             # Add user message to thread
             self.project.agents.messages.create(
@@ -265,7 +288,7 @@ class CalendarAgent:
                 
                 if run.status == "requires_action":
                     tool_calls = run.required_action.submit_tool_outputs.tool_calls
-                    tool_outputs = self._handle_tool_calls(tool_calls)
+                    tool_outputs = self._handle_tool_calls(tool_calls, all_tool_calls)
                     if tool_outputs:
                         self.project.agents.runs.submit_tool_outputs(
                             thread_id=thread_id, 
@@ -340,7 +363,8 @@ class CalendarAgent:
                                     "status": "success",
                                     "message": latest_text,
                                     "run_status": run.status,
-                                    "thread_id": thread_id
+                                    "thread_id": thread_id,
+                                    "tool_calls": all_tool_calls
                                 }
                 
                 logger.warning("No assistant response found")
@@ -381,17 +405,21 @@ class CalendarAgent:
                     "error_details": str(e)
                 }
             
-    def _handle_tool_calls(self, tool_calls) -> List[Dict[str, Any]]:
+    def _handle_tool_calls(self, tool_calls, all_tool_calls=None) -> List[Dict[str, Any]]:
         """
         Handle tool calls from the agent.
         
         Args:
             tool_calls: List of tool calls to execute
+            all_tool_calls: List to collect tool call information for frontend
             
         Returns:
             List of tool outputs
         """
         outputs = []
+        
+        if all_tool_calls is None:
+            all_tool_calls = []
         
         for call in tool_calls:
             try:
@@ -400,111 +428,82 @@ class CalendarAgent:
                 
                 logger.debug(f"Executing tool call: {fn} with args: {list(args.keys())}")
                 
-                if fn == "read_schedule":
-                    result = read_schedule(**args)
-                    outputs.append({
-                        "tool_call_id": call.id, 
-                        "output": json.dumps(result)
-                    })
-                    
-                elif fn == "create_meeting":
-                    result = create_meeting(**args)
-                    outputs.append({
-                        "tool_call_id": call.id, 
-                        "output": json.dumps(result)
-                    })
-                    
-                elif fn == "get_current_datetime":
-                    result = get_current_datetime(**args)
-                    outputs.append({
-                        "tool_call_id": call.id,
-                        "output": json.dumps(result)
-                    })
+                # Track tool call start time
+                start_time = time.time()
                 
-                elif fn == "login_submitter":
-                    result = asyncio.run(login_submitter(**args))
-                    outputs.append({
-                        "tool_call_id": call.id,
-                        "output": json.dumps(result)
-                    })
+                # Store tool call info for frontend
+                tool_call_info = {
+                    "name": fn,
+                    "parameters": args,
+                    "call_id": call.id,
+                    "start_time": start_time
+                }
+                
+                # Handle FunctionTool calls (our local functions)
+                if fn in ["read_schedule", "create_meeting", "get_current_datetime"]:
+                    if fn == "read_schedule":
+                        result = read_schedule(**args)
+                    elif fn == "create_meeting":
+                        result = create_meeting(**args)
+                    elif fn == "get_current_datetime":
+                        result = get_current_datetime(**args)
                     
-                elif fn == "leave_entitlement_summary":
-                    result = asyncio.run(leave_entitlement_summary(**args))
+                    tool_call_info["result"] = result
                     outputs.append({
-                        "tool_call_id": call.id,
-                        "output": json.dumps(result)
-                    })
-                    
-                elif fn == "leave_entitlement_detail":
-                    result = asyncio.run(leave_entitlement_detail(**args))
-                    outputs.append({
-                        "tool_call_id": call.id,
-                        "output": json.dumps(result)
-                    })
-                    
-                elif fn == "leave_listing":
-                    result = asyncio.run(leave_listing(**args))
-                    outputs.append({
-                        "tool_call_id": call.id,
-                        "output": json.dumps(result)
-                    })
-                    
-                elif fn == "leave_submit":
-                    result = asyncio.run(leave_submit(**args))
-                    outputs.append({
-                        "tool_call_id": call.id,
-                        "output": json.dumps(result)
-                    })
-                    
-                elif fn == "leave_withdraw":
-                    result = asyncio.run(leave_withdraw(**args))
-                    outputs.append({
-                        "tool_call_id": call.id,
-                        "output": json.dumps(result)
-                    })
-                    
-                elif fn == "leave_approve":
-                    result = asyncio.run(leave_approve(**args))
-                    outputs.append({
-                        "tool_call_id": call.id,
-                        "output": json.dumps(result)
-                    })
-                    
-                elif fn == "leave_reject":
-                    result = asyncio.run(leave_reject(**args))
-                    outputs.append({
-                        "tool_call_id": call.id,
+                        "tool_call_id": call.id, 
                         "output": json.dumps(result)
                     })
                     
                 else:
-                    logger.warning(f"Unknown function called: {fn}")
-                    outputs.append({
-                        "tool_call_id": call.id, 
-                        "output": json.dumps({
-                            "error": "unknown_function", 
-                            "message": f"Function {fn} is not supported"
-                        })
-                    })
+                    # This is likely an OpenAPI tool call
+                    # We should NOT handle these - let Azure AI handle them
+                    # But we still want to track them for display
+                    logger.debug(f"OpenAPI tool call: {fn}")
+                    tool_call_info["result"] = f"OpenAPI call: {fn} (handled by Azure AI)"
+                    tool_call_info["is_openapi"] = True
+                    
+                    # Don't add to outputs for OpenAPI calls - Azure handles them
+                
+                # Calculate duration and add to tool call info
+                tool_call_info["duration"] = round((time.time() - start_time) * 1000, 2)  # ms
+                all_tool_calls.append(tool_call_info)
                     
             except json.JSONDecodeError as e:
                 logger.error(f"Invalid JSON in function arguments: {e}")
+                error_result = {
+                    "error": "invalid_arguments", 
+                    "message": "Invalid function arguments"
+                }
+                tool_call_info = {
+                    "name": fn if 'fn' in locals() else "unknown",
+                    "parameters": "Invalid JSON",
+                    "call_id": call.id,
+                    "result": error_result,
+                    "duration": round((time.time() - start_time) * 1000, 2) if 'start_time' in locals() else 0
+                }
+                all_tool_calls.append(tool_call_info)
                 outputs.append({
                     "tool_call_id": call.id, 
-                    "output": json.dumps({
-                        "error": "invalid_arguments", 
-                        "message": "Invalid function arguments"
-                    })
+                    "output": json.dumps(error_result)
                 })
                 
             except Exception as e:
                 logger.error(f"Error executing tool call {fn}: {e}")
+                error_result = {
+                    "error": "execution_error", 
+                    "message": f"Error executing {fn}: {str(e)}"
+                }
+                tool_call_info = {
+                    "name": fn if 'fn' in locals() else "unknown",
+                    "parameters": args if 'args' in locals() else {},
+                    "call_id": call.id,
+                    "result": error_result,
+                    "duration": round((time.time() - start_time) * 1000, 2) if 'start_time' in locals() else 0
+                }
+                all_tool_calls.append(tool_call_info)
                 outputs.append({
                     "tool_call_id": call.id, 
-                    "output": json.dumps({
-                        "error": "execution_error", 
-                        "message": f"Error executing {fn}: {str(e)}"
-                    })
+                    "output": json.dumps(error_result)
                 })
                 
         return outputs

@@ -127,7 +127,8 @@ class AgentSession:
                 "status": response["status"],
                 "message": response["message"],
                 "thread_id": self.thread_id,
-                "timestamp": response.get("timestamp", "")
+                "timestamp": response.get("timestamp", ""),
+                "tool_calls": response.get("tool_calls", [])
             }
             
         except Exception as e:

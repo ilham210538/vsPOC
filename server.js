@@ -152,7 +152,8 @@ app.post('/api/chat', async (req, res) => {
       status: result.status || 'success',
       message: result.message || 'Response received',
       thread_id: result.thread_id || currentSession.threadId,
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
+      tool_calls: result.tool_calls || []
     });
     
   } catch (error) {

@@ -25,7 +25,6 @@ pip install -r req.txt
 # Copy your existing .env file with:
 # PROJECT_ENDPOINT=...
 # MODEL_DEPLOYMENT_NAME=...
-# LOGIC_APP_HTTP_URL=...
 # etc.
 ```
 
@@ -57,7 +56,6 @@ The app will be available at `http://localhost:3000`
    ```
    PROJECT_ENDPOINT=your_azure_ai_endpoint
    MODEL_DEPLOYMENT_NAME=your_model_name
-   LOGIC_APP_HTTP_URL=your_logic_app_url
    SCM_DO_BUILD_DURING_DEPLOYMENT=true
    ```
 
